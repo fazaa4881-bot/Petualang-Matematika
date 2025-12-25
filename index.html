@@ -1,0 +1,2264 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petualangan Kerajaan Angka</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script>
+// Inisialisasi Supabase
+const SUPABASE_URL = 'https://szvkwvtvqpwzalqnbous.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dmt3dnR2cXB3emFscW5ib3VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1NTIyMDYsImV4cCI6MjA4MjEyODIwNn0.lo6jlTthlrqfPK8hYEQ-nrXTeWnw4fuhocAnW7nskJE';
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+console.log('✅ Supabase initialized');
+</script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* CSS styles tetap sama... */
+    body { box-sizing: border-box; }
+    .font-title { font-family: 'Fredoka One', cursive; }
+    .font-body { font-family: 'Nunito', sans-serif; }
+    
+    .game-bg {
+      background: radial-gradient(ellipse at top, #1a1035 0%, #0f0a1e 50%, #050208 100%);
+    }
+    
+    .stars-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--duration) ease-in-out infinite;
+    }
+    
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    
+    @keyframes float-reverse {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    
+    @keyframes gentle-float-1 {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(-5px) translateX(3px); }
+    }
+    
+    @keyframes gentle-float-2 {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(-4px) translateX(-3px); }
+    }
+    
+    .animate-gentle-1 { animation: gentle-float-1 5s ease-in-out infinite; }
+    .animate-gentle-2 { animation: gentle-float-2 6s ease-in-out infinite; }
+    
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    
+    @keyframes wiggle-fast {
+      0%, 100% { transform: rotate(-8deg); }
+      50% { transform: rotate(8deg); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 200, 87, 0.4), 0 0 40px rgba(255, 107, 157, 0.2); }
+      50% { box-shadow: 0 0 40px rgba(255, 200, 87, 0.8), 0 0 80px rgba(255, 107, 157, 0.4); }
+    }
+    
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    @keyframes pop-in {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes sparkle-float {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+      50% { transform: translateY(-8px) scale(1.2); opacity: 1; }
+    }
+    
+    @keyframes glow-ring {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 200, 87, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(255, 200, 87, 0.8), 0 0 60px rgba(255, 107, 157, 0.4); }
+    }
+    
+    @keyframes borderGlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-8px); }
+      80% { transform: translateX(8px); }
+    }
+    
+    @keyframes timer-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.2); }
+      50% { transform: scale(1); }
+      75% { transform: scale(1.15); }
+    }
+    
+    @keyframes swing {
+      0%, 100% { transform: rotate(-10deg); }
+      50% { transform: rotate(10deg); }
+    }
+    
+    @keyframes jump {
+      0%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-15px); }
+      50% { transform: translateY(0); }
+      70% { transform: translateY(-8px); }
+    }
+    
+    @keyframes glow-pulse {
+      0%, 100% { text-shadow: 0 0 10px rgba(255, 200, 87, 0.5); }
+      50% { text-shadow: 0 0 30px rgba(255, 200, 87, 1), 0 0 50px rgba(255, 107, 157, 0.8); }
+    }
+    
+    @keyframes rainbow-border {
+      0% { border-color: #ffc857; }
+      25% { border-color: #ff6b9d; }
+      50% { border-color: #00d4ff; }
+      75% { border-color: #a855f7; }
+      100% { border-color: #ffc857; }
+    }
+    
+    @keyframes slide-up {
+      0%, 100% { transform: translateY(5px); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-float-reverse { animation: float-reverse 3.5s ease-in-out infinite; }
+    .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+    .animate-wiggle { animation: wiggle 1s ease-in-out infinite; }
+    .animate-wiggle-fast { animation: wiggle-fast 0.5s ease-in-out infinite; }
+    .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .animate-pop-in { animation: pop-in 0.5s ease-out forwards; }
+    .animate-glow-ring { animation: glow-ring 2s ease-in-out infinite; }
+    .animate-spin-slow { animation: spin-slow 8s linear infinite; }
+    .animate-shake { animation: shake 0.5s ease-in-out; }
+    .animate-timer-pulse { animation: timer-pulse 1s ease-in-out infinite; }
+    .animate-heartbeat { animation: heartbeat 1.5s ease-in-out infinite; }
+    .animate-swing { animation: swing 1s ease-in-out infinite; }
+    .animate-jump { animation: jump 1.5s ease-in-out infinite; }
+    .animate-glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
+    .animate-rainbow-border { animation: rainbow-border 3s linear infinite; }
+    .animate-slide-up { animation: slide-up 2s ease-in-out infinite; }
+    .sparkle-1 { animation: sparkle-float 2s ease-in-out infinite; }
+    .sparkle-2 { animation: sparkle-float 2.5s ease-in-out infinite; animation-delay: 0.3s; }
+    .sparkle-3 { animation: sparkle-float 3s ease-in-out infinite; animation-delay: 0.6s; }
+    
+    .btn-magic {
+      background: linear-gradient(135deg, #ffc857 0%, #ff6b9d 50%, #e9724c 100%);
+      background-size: 200% 200%;
+      animation: gradient-shift 3s ease infinite;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .btn-magic:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(255, 107, 157, 0.4);
+    }
+    
+    .btn-magic:active {
+      transform: translateY(0) scale(0.98);
+    }
+    
+    .card-glass {
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    
+    .card-glow {
+      box-shadow: 0 0 30px rgba(255, 107, 157, 0.2), inset 0 0 30px rgba(255, 200, 87, 0.05);
+    }
+    
+    .menu-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .menu-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      border-color: rgba(255, 200, 87, 0.5);
+    }
+    
+    .hero-bounce { animation: bounce-slow 2s ease-in-out infinite; }
+    
+    .guide-box {
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 200, 87, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .guide-box:hover {
+      border-color: rgba(255, 200, 87, 0.6);
+      transform: translateY(-3px);
+    }
+    
+    .skill-card {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .skill-card:hover { transform: scale(1.03); }
+    .skill-card:active { transform: scale(0.98); }
+    
+    .option-btn {
+      background: linear-gradient(135deg, rgba(26, 16, 53, 0.9) 0%, rgba(15, 10, 30, 0.9) 100%);
+      border: 2px solid rgba(255, 200, 87, 0.3);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .option-btn:hover:not(:disabled) {
+      border-color: #ffc857;
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(255, 200, 87, 0.3);
+    }
+    
+    .option-btn.correct {
+      background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%) !important;
+      border-color: #00ff88 !important;
+    }
+    
+    .option-btn.wrong {
+      background: linear-gradient(135deg, #ff4757 0%, #cc2936 100%) !important;
+      border-color: #ff4757 !important;
+    }
+    
+    .timer-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #00ff88 0%, #ffc857 50%, #ff6b9d 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .timer-circle::before {
+      content: '';
+      position: absolute;
+      width: 66px;
+      height: 66px;
+      background: #0f0a1e;
+      border-radius: 50%;
+    }
+    
+    .timer-circle.warning {
+      background: conic-gradient(from 0deg, #ff6b9d 0%, #ff4757 100%);
+    }
+    
+    .timer-text {
+      position: relative;
+      z-index: 1;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.5rem;
+    }
+    
+    .question-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 12px;
+      border: 2px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
+      transition: all 0.3s ease;
+    }
+    
+    .question-dot.current {
+      border-color: #ffc857;
+      background: linear-gradient(135deg, #ffc857, #ff6b9d);
+      color: #000;
+      transform: scale(1.15);
+    }
+    
+    .question-dot.correct {
+      border-color: #00ff88;
+      background: linear-gradient(135deg, #00ff88, #00cc6a);
+      color: #000;
+    }
+    
+    .question-dot.wrong {
+      border-color: #ff4757;
+      background: linear-gradient(135deg, #ff4757, #cc2936);
+      color: #fff;
+    }
+    
+    .feedback-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      pointer-events: none;
+    }
+    
+    .feedback-content {
+      padding: 2rem 3rem;
+      border-radius: 2rem;
+      text-align: center;
+      backdrop-filter: blur(20px);
+    }
+    
+    .feedback-correct {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.9), rgba(0, 204, 106, 0.9));
+      box-shadow: 0 0 60px rgba(0, 255, 136, 0.6);
+    }
+    
+    .feedback-wrong {
+      background: linear-gradient(135deg, rgba(255, 71, 87, 0.9), rgba(204, 41, 54, 0.9));
+      box-shadow: 0 0 60px rgba(255, 71, 87, 0.6);
+    }
+    
+    .upload-zone {
+      border: 3px dashed rgba(255, 200, 87, 0.5);
+      border-radius: 1.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .upload-zone:hover {
+      border-color: #ffc857;
+      background: rgba(255, 200, 87, 0.1);
+    }
+    
+    .story-image {
+      width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 1rem;
+      border: 3px solid rgba(255, 200, 87, 0.3);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 200, 87, 0.1));
+      padding: 8px;
+    }
+    
+    .story-image-fallback {
+      width: 100%;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 1rem;
+      border: 3px dashed rgba(255, 200, 87, 0.5);
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 3rem;
+    }
+    
+    .important-message {
+      background: linear-gradient(135deg, rgba(255, 200, 87, 0.3) 0%, rgba(255, 107, 157, 0.3) 100%);
+      border: 3px solid;
+      animation: rainbow-border 3s linear infinite, pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .leaderboard-item {
+      transition: all 0.3s ease;
+    }
+    
+    .leaderboard-item:hover {
+      transform: scale(1.02);
+    }
+    
+    .rank-1 { background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.2)); border-color: #ffd700 !important; }
+    .rank-2 { background: linear-gradient(135deg, rgba(192, 192, 192, 0.3), rgba(169, 169, 169, 0.2)); border-color: #c0c0c0 !important; }
+    .rank-3 { background: linear-gradient(135deg, rgba(205, 127, 50, 0.3), rgba(184, 115, 51, 0.2)); border-color: #cd7f32 !important; }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full font-body game-bg text-white overflow-auto">
+  <div class="stars-bg" id="stars-container"></div>
+  <div id="app" class="relative z-10 min-h-full w-full"><!-- MENU UTAMA -->
+   <main id="start-screen" class="min-h-full flex flex-col items-center justify-center p-4">
+    <div class="text-center max-w-md w-full relative z-20">
+     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0"><span class="absolute text-5xl animate-float opacity-60" style="top: 5%; left: 5%;">🏰</span> <span class="absolute text-4xl animate-bounce-slow opacity-50" style="top: 10%; right: 8%;">⚔️</span> <span class="absolute text-5xl animate-swing opacity-50" style="top: 20%; left: 3%;">🛡️</span> <span class="absolute text-4xl animate-float opacity-40" style="top: 30%; right: 5%; animation-delay: 0.5s;">💎</span> <span class="absolute text-5xl animate-wiggle opacity-50" style="top: 50%; left: 2%;">👑</span> <span class="absolute text-4xl animate-bounce-slow opacity-40" style="top: 60%; right: 3%; animation-delay: 1s;">🏆</span> <span class="absolute text-5xl animate-float opacity-50" style="top: 75%; left: 8%; animation-delay: 1.5s;">⭐</span> <span class="absolute text-4xl animate-swing opacity-40" style="top: 85%; right: 10%;">✨</span>
+     </div>
+     <div class="relative z-10 mb-6">
+      <div class="relative inline-block">
+       <div class="absolute inset-0 bg-gradient-to-r from-yellow-500/30 via-pink-500/30 to-cyan-500/30 rounded-full blur-3xl scale-150 animate-pulse"></div>
+       <div class="relative hero-bounce">
+        <div class="text-8xl drop-shadow-2xl">
+         🦸
+        </div><span class="absolute -top-2 -right-2 text-2xl sparkle-1">✨</span> <span class="absolute top-4 -left-4 text-xl sparkle-2">⭐</span> <span class="absolute -bottom-1 right-0 text-2xl sparkle-3">💫</span>
+       </div>
+      </div>
+     </div>
+     <h1 id="game-title" class="font-title text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-orange-400 mb-4">Petualangan Kerajaan Angka</h1>
+     <div class="card-glass rounded-2xl px-6 py-4 mb-6 border-2 border-yellow-500/30">
+      <p id="motivation-text" class="text-xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-yellow-300 to-pink-300 font-bold">�� Jadilah Pahlawan Matematika! ✨</p>
+      <p class="text-gray-300 text-base mt-2">Selesaikan misi, kumpulkan poin, raih bintang!</p>
+     </div>
+     <div class="flex justify-center gap-4 mb-6"><button id="menu-materi-btn" class="menu-card rounded-2xl px-6 py-5 text-center cursor-pointer hover:border-yellow-500/50 border-2 border-transparent transition-all">
+       <div class="text-4xl mb-2 animate-wiggle">
+        📚
+       </div><p class="text-sm text-yellow-300 font-bold">MATERI</p></button> <button id="menu-peringkat-btn" class="menu-card rounded-2xl px-6 py-5 text-center cursor-pointer hover:border-pink-500/50 border-2 border-transparent transition-all">
+       <div class="text-4xl mb-2 animate-bounce-slow" style="animation-delay: 0.2s;">
+        🏆
+       </div><p class="text-sm text-pink-300 font-bold">PERINGKAT</p></button>
+     </div><button id="start-btn" class="btn-magic px-10 py-6 rounded-full font-bold text-2xl text-gray-900 animate-pulse-glow w-full max-w-xs mx-auto flex items-center justify-center gap-3 mb-4"> <span class="text-3xl">🎮</span> <span>MAIN!</span> <span class="text-3xl">🚀</span> </button>
+     <div class="flex items-center justify-center gap-2 text-gray-400"><span class="text-2xl animate-bounce">👆</span>
+      <p class="text-sm">Sentuh untuk mulai petualangan!</p>
+     </div>
+    </div>
+   </main><!-- PANDUAN MISI -->
+   <div id="howto-screen" class="min-h-full flex flex-col items-center p-4 hidden overflow-auto">
+    <div class="text-center max-w-lg w-full py-6 relative">
+     <div class="absolute top-0 left-0 text-4xl animate-float opacity-60">
+      🏰
+     </div>
+     <div class="absolute top-10 right-0 text-3xl animate-bounce-slow opacity-60">
+      ⚔️
+     </div>
+     <div class="absolute bottom-20 left-2 text-3xl animate-swing opacity-50">
+      🛡️
+     </div>
+     <div class="absolute bottom-10 right-5 text-4xl animate-wiggle opacity-50">
+      👑
+     </div>
+     <div class="relative mb-4">
+      <div class="absolute inset-0 bg-gradient-to-r from-yellow-500/30 via-purple-500/30 to-pink-500/30 rounded-full blur-3xl scale-150 animate-pulse"></div>
+      <div class="relative inline-block">
+       <div class="text-8xl animate-bounce-slow">
+        🤴
+       </div><span class="absolute -top-2 -right-2 text-3xl sparkle-1">👑</span> <span class="absolute top-2 -left-4 text-2xl sparkle-2">✨</span>
+      </div>
+     </div>
+     <h2 class="font-title text-4xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-cyan-400 mb-3 animate-glow-pulse">Pesan dari Raja</h2>
+     <div class="relative bg-gradient-to-br from-purple-900/60 to-indigo-900/60 backdrop-blur-lg rounded-3xl p-5 mb-5 border-2 border-yellow-400/50 animate-gentle-1">
+      <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-500 text-gray-900 px-4 py-1 rounded-full font-bold text-sm">
+       💬 Raja berkata...
+      </div>
+      <p class="text-gray-200 text-lg mt-2">"Selamat datang, Pahlawan Cilik! Sebelum memulai misi, perhatikan pesan penting dariku!"</p>
+     </div>
+     <div class="relative mb-6">
+      <div class="absolute inset-0 bg-gradient-to-r from-red-500/40 via-yellow-500/40 to-red-500/40 rounded-2xl blur-xl animate-pulse"></div>
+      <div class="relative important-message rounded-2xl px-6 py-5 bg-gradient-to-r from-red-900/80 to-orange-900/80">
+       <div class="flex items-center justify-center gap-2 mb-3"><span class="text-3xl animate-wiggle-fast">🚨</span>
+        <p class="text-yellow-300 text-2xl font-title">PENTING!</p><span class="text-3xl animate-wiggle-fast">🚨</span>
+       </div>
+       <div class="flex items-center justify-center gap-4 bg-black/30 rounded-xl p-4"><span class="text-5xl animate-swing">✏️</span>
+        <div class="text-left">
+         <p class="text-white text-xl font-bold">Siapkan Pensil &amp; Kertas!</p>
+         <p class="text-yellow-200 text-base">Raja akan meminta proses pengerjaan misimu 📸</p>
+        </div><span class="text-5xl animate-bounce-slow">📝</span>
+       </div>
+      </div>
+     </div>
+     <div class="card-glass rounded-3xl p-5 mb-6 border-2 border-cyan-500/30">
+      <h3 class="font-title text-xl text-cyan-400 mb-4 flex items-center justify-center gap-2"><span class="animate-spin-slow">⚙️</span> Aturan Misi <span class="animate-spin-slow">⚙️</span></h3>
+      <div class="space-y-3 text-left">
+       <div class="flex items-start gap-4 bg-gradient-to-r from-orange-500/20 to-transparent rounded-xl p-4 border-l-4 border-orange-500"><span class="text-3xl animate-swing">✏️</span>
+        <div>
+         <p class="text-orange-400 font-bold text-lg">Ambil Kertas &amp; Pensilmu!</p>
+         <p class="text-gray-300 text-base">Hitung dulu di kertas, baru pilih jawaban yang benar di layar</p>
+        </div>
+       </div>
+       <div class="flex items-start gap-4 bg-gradient-to-r from-yellow-500/20 to-transparent rounded-xl p-4 border-l-4 border-yellow-500"><span class="text-3xl animate-bounce-slow">🎯</span>
+        <div>
+         <p class="text-yellow-400 font-bold text-lg">10 Tantangan per Misi</p>
+         <p class="text-gray-300 text-base">Setiap misi ada 10 tantangan, selesaikan satu per satu!</p>
+        </div>
+       </div>
+       <div class="flex items-start gap-4 bg-gradient-to-r from-cyan-500/20 to-transparent rounded-xl p-4 border-l-4 border-cyan-500"><span class="text-3xl animate-timer-pulse">⏰</span>
+        <div>
+         <p class="text-cyan-400 font-bold text-lg">Waktu 1 Menit per Tantangan</p>
+         <p class="text-gray-300 text-base">Kamu punya waktu 60 detik untuk setiap tantangan</p>
+        </div>
+       </div>
+       <div class="flex items-start gap-4 bg-gradient-to-r from-red-500/20 to-transparent rounded-xl p-4 border-l-4 border-red-500"><span class="text-3xl animate-heartbeat">❤️</span>
+        <div>
+  <p class="text-red-400 font-bold text-lg">2x Kesempatan</p>
+  <p class="text-gray-300 text-base">Kalau salah, kamu punya 2 kesempatan untuk mencoba</p>
+</div>
+       </div>
+       <div class="flex items-start gap-4 bg-gradient-to-r from-pink-500/20 to-transparent rounded-xl p-4 border-l-4 border-pink-500"><span class="text-3xl animate-jump">📸</span>
+        <div>
+         <p class="text-pink-400 font-bold text-lg">Foto Proses Kerjaanmu untuk Raja!</p>
+         <p class="text-gray-300 text-base">Di setiap misi kamu wajib foto proses pengerjaanmu ya!</p>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="flex justify-center gap-3 text-4xl mb-5"><span class="animate-float" style="animation-delay: 0s;">⭐</span> <span class="animate-float" style="animation-delay: 0.2s;">🌟</span> <span class="animate-float" style="animation-delay: 0.4s;">💫</span> <span class="animate-float" style="animation-delay: 0.6s;">✨</span> <span class="animate-float" style="animation-delay: 0.8s;">⭐</span>
+     </div><button id="howto-continue-btn" class="btn-magic px-10 py-5 rounded-full font-bold text-2xl text-gray-900 w-full max-w-sm mx-auto flex items-center justify-center gap-3 animate-pulse-glow"> <span class="animate-swing">⚔️</span><span>SIAP BERTUALANG!</span><span class="animate-bounce">���</span> </button> <button id="howto-back-btn" class="text-gray-400 hover:text-white transition-colors text-base mt-5 flex items-center justify-center gap-2 mx-auto"> <span>←</span> Kembali ke Menu </button>
+    </div>
+   </div><!-- INPUT NAMA -->
+   <div id="name-screen" class="min-h-full flex flex-col items-center justify-center p-6 hidden">
+    <div class="text-center max-w-md w-full relative">
+     <div class="absolute -top-10 left-0 text-4xl animate-float opacity-50">
+      🏰
+     </div>
+     <div class="absolute -top-5 right-0 text-3xl animate-swing opacity-50">
+      ⚔️
+     </div>
+     <div class="relative mb-4">
+      <div class="relative inline-block">
+       <div class="absolute inset-0 bg-gradient-to-r from-yellow-500/40 via-pink-500/40 to-cyan-500/40 rounded-full blur-2xl scale-125 animate-pulse"></div>
+       <div class="relative">
+        <div class="text-7xl animate-bounce-slow">
+         🦸‍♂️
+        </div>
+        <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1"><span class="text-2xl animate-wiggle">👋</span>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="relative bg-white/10 backdrop-blur-lg rounded-3xl p-6 mb-4 border-2 border-yellow-400/30 animate-gentle-1">
+      <p class="text-2xl text-yellow-300 font-title mb-2">Halo, Pahlawan Kecil! 👋</p>
+      <p class="text-gray-200 text-lg">Siapa namamu? Tulis di bawah ya!</p>
+     </div>
+     <div class="card-glass rounded-3xl p-6 mb-4 border-2 border-pink-500/30">
+      <div class="flex items-center justify-center gap-3 mb-4"><span class="text-3xl animate-wiggle">🏷️</span>
+       <p class="text-pink-300 font-bold text-xl">Nama Pahlawanku:</p>
+      </div><label for="player-name-input" class="sr-only">Nama Pahlawan</label>
+      <div class="relative mb-5"><span class="absolute left-4 top-1/2 -translate-y-1/2 text-3xl">✏️</span> <input type="text" id="player-name-input" placeholder="Tulis namamu di sini..." class="w-full pl-16 pr-5 py-5 rounded-2xl bg-gradient-to-r from-purple-900/50 to-pink-900/50 border-2 border-pink-400/40 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/20 text-center text-2xl transition-all" maxlength="20">
+      </div><button id="confirm-name-btn" class="btn-magic px-8 py-5 rounded-full font-bold text-2xl text-gray-900 w-full flex items-center justify-center gap-3 group"> <span class="group-hover:animate-wiggle">🚀</span> <span>AYO MULAI!</span> <span class="group-hover:animate-bounce">��</span> </button>
+     </div><button id="back-to-menu-btn" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center justify-center gap-2 mx-auto"> <span>←</span> Kembali ke Menu </button>
+    </div>
+   </div><!-- PILIH JURUS -->
+   <div id="choose-skill-screen" class="min-h-full flex flex-col items-center p-4 hidden overflow-auto">
+    <div class="text-center max-w-2xl w-full py-6 relative">
+     <div class="absolute top-0 left-0 text-3xl animate-float opacity-50">
+      ✨
+     </div>
+     <div class="absolute top-10 right-0 text-4xl animate-bounce-slow opacity-50">
+      🌟
+     </div>
+     <div class="relative mb-5">
+      <div class="flex justify-center items-center gap-4 mb-4"><span class="text-5xl animate-swing">⚔️</span> <span class="text-6xl animate-bounce-slow">🏰</span> <span class="text-5xl animate-swing" style="animation-delay: 0.5s;">🛡️</span>
+      </div>
+      <h2 class="font-title text-4xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-cyan-400 mb-3 animate-glow-pulse">Pilih Jurusmu!</h2>
+      <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur rounded-full px-6 py-3 border border-yellow-400/30"><span class="text-3xl animate-wiggle">🦸</span>
+       <p class="text-gray-200 text-lg">Hai, <span id="hero-name-display" class="text-yellow-400 font-bold">Pahlawan</span>! Mau pakai jurus apa?</p>
+      </div>
+     </div>
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 px-2"><button id="choose-addition-btn" class="skill-card text-left animate-gentle-1">
+       <div class="relative overflow-hidden rounded-3xl p-1" style="background: linear-gradient(135deg, #ffc857, #ff6b9d, #e9724c, #ffc857); background-size: 300% 300%; animation: borderGlow 4s ease infinite;">
+        <div class="relative bg-gradient-to-br from-gray-900 via-purple-900/90 to-gray-900 rounded-3xl p-6">
+         <div class="absolute top-2 right-2 text-2xl animate-sparkle-float">
+          ✨
+         </div>
+         <div class="w-24 h-24 mx-auto relative mb-4">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-500 to-pink-500 animate-pulse opacity-40 blur-lg"></div>
+          <div class="absolute inset-0 flex items-center justify-center"><span class="text-6xl animate-swing">⚔���</span>
+          </div>
+         </div>
+         <h3 class="font-title text-2xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400 mb-3 text-center">JURUS PENGGABUNGAN</h3>
+         <p class="text-gray-300 text-base mb-4 text-center">Gabungkan kekuatan jadi lebih banyak!</p>
+         <div class="bg-black/40 rounded-xl p-4 border border-yellow-500/30">
+          <p class="text-gray-400 text-sm mb-2 text-center">Contoh:</p>
+          <div class="flex items-center justify-center gap-3 text-2xl font-title"><span class="text-yellow-400">3</span> <span class="text-white animate-pulse">+</span> <span class="text-pink-400">2</span> <span class="text-white">=</span> <span class="text-green-400">5</span>
+          </div>
+         </div>
+         <div class="mt-4 text-center"><span class="inline-block bg-yellow-500/20 text-yellow-300 text-base px-4 py-2 rounded-full border border-yellow-500/40">👆 Sentuh untuk pilih!</span>
+         </div>
+        </div>
+       </div></button> <button id="choose-subtraction-btn" class="skill-card text-left animate-gentle-2">
+       <div class="relative overflow-hidden rounded-3xl p-1" style="background: linear-gradient(135deg, #00d4ff, #a855f7, #00ff88, #00d4ff); background-size: 300% 300%; animation: borderGlow 4s ease infinite; animation-delay: 2s;">
+        <div class="relative bg-gradient-to-br from-gray-900 via-indigo-900/90 to-gray-900 rounded-3xl p-6">
+         <div class="absolute top-2 right-2 text-2xl animate-sparkle-float">
+          💫
+         </div>
+         <div class="w-24 h-24 mx-auto relative mb-4">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 animate-pulse opacity-40 blur-lg"></div>
+          <div class="absolute inset-0 flex items-center justify-center"><span class="text-6xl animate-bounce-slow">🛡️</span>
+          </div>
+         </div>
+         <h3 class="font-title text-2xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400 mb-3 text-center">JURUS PENGURANGAN</h3>
+         <p class="text-gray-300 text-base mb-4 text-center">Kurangi jumlah jadi lebih sedikit!</p>
+         <div class="bg-black/40 rounded-xl p-4 border border-cyan-500/30">
+          <p class="text-gray-400 text-sm mb-2 text-center">Contoh:</p>
+          <div class="flex items-center justify-center gap-3 text-2xl font-title"><span class="text-cyan-400">7</span> <span class="text-white animate-pulse">−</span> <span class="text-purple-400">3</span> <span class="text-white">=</span> <span class="text-green-400">4</span>
+          </div>
+         </div>
+         <div class="mt-4 text-center"><span class="inline-block bg-cyan-500/20 text-cyan-300 text-base px-4 py-2 rounded-full border border-cyan-500/40">👆 Sentuh untuk pilih!</span>
+         </div>
+        </div>
+       </div></button>
+     </div><button id="back-to-name-btn" class="text-gray-400 hover:text-white transition-colors text-base">← Kembali</button>
+    </div>
+   </div><!-- PILIH MISI -->
+   <div id="choose-mission-screen" class="min-h-full flex flex-col items-center p-4 hidden overflow-auto">
+    <div class="text-center max-w-lg w-full py-6 relative">
+     <div class="absolute top-0 left-0 text-4xl animate-float opacity-50">
+      🗺️
+     </div>
+     <div class="absolute top-5 right-0 text-3xl animate-bounce-slow opacity-50">
+      🧭
+     </div>
+     <div class="text-7xl mb-4 animate-bounce-slow" id="mission-skill-icon">
+      ⚔️
+     </div>
+     <h2 class="font-title text-4xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-cyan-400 mb-3 animate-glow-pulse">Pilih Jenis Misimu!</h2>
+     <p class="text-gray-300 text-lg mb-3">Jurus: <span id="selected-skill-name" class="text-yellow-400 font-bold">Penggabungan</span></p>
+     <p class="text-gray-400 mb-6 text-base flex items-center justify-center gap-2">Sentuh misi untuk melihat detail! <span class="animate-bounce">👇</span></p>
+     <div class="space-y-5 mb-6">
+      <div class="mission-card animate-gentle-1" data-mission="pribadi"><button class="mission-select-btn card-glass card-glow rounded-2xl p-5 w-full text-left transition-all hover:border-yellow-500/50 border-2 border-transparent">
+        <div class="flex items-center gap-4">
+         <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-yellow-500/40 to-orange-500/40 flex items-center justify-center border-2 border-yellow-500/50 overflow-hidden relative">
+          <svg viewbox="0 0 100 100" class="w-20 h-20 animate-bounce-slow"><defs>
+            <radialgradient id="heroGlow" cx="50%" cy="50%" r="50%">
+             <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0.6" />
+             <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:0" />
+            </radialgradient>
+           </defs> <circle cx="50" cy="50" r="45" fill="url(#heroGlow)" /> <path d="M30 45 Q20 70 25 90 L50 75 L75 90 Q80 70 70 45" fill="#ef4444" /> <ellipse cx="50" cy="65" rx="18" ry="22" fill="#3b82f6" /> <polygon points="50,52 52,58 58,58 53,62 55,68 50,65 45,68 47,62 42,58 48,58" fill="#fbbf24" /> <circle cx="50" cy="35" r="16" fill="#fcd34d" /> <circle cx="44" cy="33" r="3" fill="#1f2937" /> <circle cx="56" cy="33" r="3" fill="#1f2937" /> <path d="M44 40 Q50 45 56 40" stroke="#1f2937" stroke-width="2" fill="none" /> <path d="M32 28 L38 18 L44 26 L50 14 L56 26 L62 18 L68 28 L65 30 L35 30 Z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1" /> <circle cx="50" cy="22" r="3" fill="#ef4444" /> <ellipse cx="28" cy="55" rx="6" ry="10" fill="#fcd34d" transform="rotate(-30 28 55)" /> <ellipse cx="72" cy="55" rx="6" ry="10" fill="#fcd34d" transform="rotate(30 72 55)" />
+          </svg><span class="absolute top-1 right-1 text-lg sparkle-1">✨</span>
+         </div>
+         <div class="flex-1">
+          <h3 class="font-title text-2xl text-yellow-400">ZONA AKU HEBAT</h3>
+          <p class="text-gray-300 text-base">Tantangan sehari-hari 🌟</p>
+         </div>
+         <div class="text-2xl mission-arrow transition-transform animate-slide-up">
+          ▼
+         </div>
+        </div></button>
+       <div class="mission-detail hidden mt-3 card-glass rounded-2xl p-5 border-2 border-yellow-500/30">
+        <p class="text-gray-300 text-base mb-4">Latih kemampuan berhitungmu dengan tantangan seru tentang kehidupan sehari-hari!</p><button class="start-mission-btn btn-magic w-full py-4 rounded-xl font-bold text-xl text-gray-900 flex items-center justify-center gap-2" data-mission-type="pribadi"> <span>⚔️</span> MULAI MISI INI! </button>
+       </div>
+      </div>
+      <div class="mission-card animate-gentle-2" data-mission="sosial"><button class="mission-select-btn card-glass card-glow rounded-2xl p-5 w-full text-left transition-all hover:border-pink-500/50 border-2 border-transparent">
+        <div class="flex items-center gap-4">
+         <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-pink-500/40 to-purple-500/40 flex items-center justify-center border-2 border-pink-500/50 overflow-hidden relative">
+          <svg viewbox="0 0 100 100" class="w-20 h-20"><defs>
+            <radialgradient id="teamGlow" cx="50%" cy="50%" r="50%">
+             <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.5" />
+             <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0" />
+            </radialgradient>
+           </defs> <circle cx="50" cy="50" r="45" fill="url(#teamGlow)" /> <ellipse cx="30" cy="72" rx="12" ry="18" fill="#ec4899" /> <circle cx="30" cy="45" r="14" fill="#fcd34d" /> <ellipse cx="30" cy="38" rx="14" ry="10" fill="#7c3aed" /> <circle cx="25" cy="43" r="2.5" fill="#1f2937" /> <circle cx="35" cy="43" r="2.5" fill="#1f2937" /> <path d="M25 50 Q30 54 35 50" stroke="#1f2937" stroke-width="1.5" fill="none" /> <path d="M42 55 L50 45" stroke="#fcd34d" stroke-width="8" stroke-linecap="round" /> <ellipse cx="70" cy="72" rx="12" ry="18" fill="#3b82f6" /> <circle cx="70" cy="45" r="14" fill="#fcd34d" /> <ellipse cx="70" cy="38" rx="14" ry="10" fill="#f97316" /> <circle cx="65" cy="43" r="2.5" fill="#1f2937" /> <circle cx="75" cy="43" r="2.5" fill="#1f2937" /> <path d="M65 50 Q70 54 75 50" stroke="#1f2937" stroke-width="1.5" fill="none" /> <path d="M58 55 L50 45" stroke="#fcd34d" stroke-width="8" stroke-linecap="round" /> <g class="animate-pulse">
+            <polygon points="50,40 52,44 56,44 53,47 54,51 50,48 46,51 47,47 44,44 48,44" fill="#fbbf24" />
+           </g> <text x="50" y="30" text-anchor="middle" font-size="12" class="animate-heartbeat">
+            💕
+           </text>
+          </svg><span class="absolute top-0 right-0 text-lg sparkle-1">💫</span>
+         </div>
+         <div class="flex-1">
+          <h3 class="font-title text-2xl text-pink-400">MISI TIM HEBAT</h3>
+          <p class="text-gray-300 text-base">Bekerja sama &amp; berbagi 👫</p>
+         </div>
+         <div class="text-2xl mission-arrow transition-transform animate-slide-up">
+          ▼
+         </div>
+        </div></button>
+       <div class="mission-detail hidden mt-3 card-glass rounded-2xl p-5 border-2 border-pink-500/30">
+        <p class="text-gray-300 text-base mb-4">Gunakan angka untuk bekerja sama dan berbagi dengan teman!</p><button class="start-mission-btn btn-magic w-full py-4 rounded-xl font-bold text-xl text-gray-900 flex items-center justify-center gap-2" data-mission-type="sosial"> <span>⚔️</span> MULAI MISI INI! </button>
+       </div>
+      </div>
+      <div class="mission-card animate-gentle-1" style="animation-delay: 0.5s;" data-mission="saintifik"><button class="mission-select-btn card-glass card-glow rounded-2xl p-5 w-full text-left transition-all hover:border-cyan-500/50 border-2 border-transparent">
+        <div class="flex items-center gap-4">
+         <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-cyan-500/40 to-blue-500/40 flex items-center justify-center border-2 border-cyan-500/50 overflow-hidden relative">
+          <svg viewbox="0 0 100 100" class="w-20 h-20"><defs>
+            <radialgradient id="sciGlow" cx="50%" cy="50%" r="50%">
+             <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:0.5" />
+             <stop offset="100%" style="stop-color:#22d3ee;stop-opacity:0" />
+            </radialgradient>
+           </defs> <circle cx="50" cy="50" r="45" fill="url(#sciGlow)" /> <path d="M30 55 L30 90 L70 90 L70 55 Q50 45 30 55" fill="white" /> <path d="M35 60 L35 85" stroke="#e5e7eb" stroke-width="2" /> <path d="M65 60 L65 85" stroke="#e5e7eb" stroke-width="2" /> <circle cx="50" cy="35" r="18" fill="#fcd34d" /> <path d="M32 30 Q35 15 45 25 Q50 10 55 25 Q65 15 68 30" fill="#1f2937" /> <circle cx="42" cy="35" r="8" fill="none" stroke="#1f2937" stroke-width="2" /> <circle cx="58" cy="35" r="8" fill="none" stroke="#1f2937" stroke-width="2" /> <circle cx="42" cy="35" r="5" fill="#bfdbfe" opacity="0.5" /> <circle cx="58" cy="35" r="5" fill="#bfdbfe" opacity="0.5" /> <circle cx="42" cy="35" r="2" fill="#1f2937" /> <circle cx="58" cy="35" r="2" fill="#1f2937" /> <path d="M44 43 Q50 48 56 43" stroke="#1f2937" stroke-width="2" fill="none" /> <g class="animate-wiggle" style="transform-origin: 75px 60px;">
+            <rect x="72" y="50" width="10" height="30" rx="5" fill="#06b6d4" />
+            <rect x="70" y="48" width="14" height="5" rx="2" fill="#0891b2" />
+            <circle cx="77" cy="65" r="2" fill="#a5f3fc" class="animate-float" />
+           </g> <g class="animate-spin-slow" style="transform-origin: 25px 25px;">
+            <circle cx="25" cy="25" r="4" fill="#fbbf24" />
+            <ellipse cx="25" cy="25" rx="10" ry="4" fill="none" stroke="#f59e0b" stroke-width="1.5" />
+            <ellipse cx="25" cy="25" rx="10" ry="4" fill="none" stroke="#f59e0b" stroke-width="1.5" transform="rotate(60 25 25)" />
+            <ellipse cx="25" cy="25" rx="10" ry="4" fill="none" stroke="#f59e0b" stroke-width="1.5" transform="rotate(-60 25 25)" />
+           </g>
+          </svg><span class="absolute top-0 left-0 text-lg sparkle-2">🔬</span>
+         </div>
+         <div class="flex-1">
+          <h3 class="font-title text-2xl text-cyan-400">MISI ILMUAN CILIK</h3>
+          <p class="text-gray-300 text-base">Berpikir logis &amp; cerdas 🔬</p>
+         </div>
+         <div class="text-2xl mission-arrow transition-transform animate-slide-up">
+          ▼
+         </div>
+        </div></button>
+       <div class="mission-detail hidden mt-3 card-glass rounded-2xl p-5 border-2 border-cyan-500/30">
+        <p class="text-gray-300 text-base mb-4">Pecahkan tantangan angka dengan logika seperti ilmuwan cilik!</p><button class="start-mission-btn btn-magic w-full py-4 rounded-xl font-bold text-xl text-gray-900 flex items-center justify-center gap-2" data-mission-type="saintifik"> <span>⚔️</span> MULAI MISI INI! </button>
+       </div>
+      </div>
+     </div><button id="back-to-skill-btn" class="text-gray-400 hover:text-white transition-colors text-base">← Kembali Pilih Jurus</button>
+    </div>
+   </div><!-- GAME SCREEN -->
+   <div id="game-screen" class="min-h-full flex flex-col p-4 hidden">
+    <header class="flex flex-col items-center mb-3">
+     <div class="timer-circle animate-glow-ring mb-2" id="timer-circle"><span id="timer" class="timer-text text-yellow-400">60</span>
+     </div>
+     <p class="text-gray-400 text-sm">⏱️ Waktu tersisa</p>
+    </header>
+    <nav class="mb-3" aria-label="Progress misi">
+     <div class="flex justify-center gap-2 flex-wrap" id="question-dots"></div>
+    </nav>
+    <div class="flex items-center justify-between mb-3 card-glass rounded-xl px-4 py-2">
+     <div class="flex items-center gap-2"><span class="text-2xl">🦸</span> <span id="display-name" class="font-bold text-yellow-400">Pahlawan</span>
+     </div>
+     <div class="flex items-center gap-4">
+      <div class="flex items-center gap-1 bg-yellow-500/20 px-3 py-1 rounded-full"><span>💎</span><span id="points-display" class="font-bold text-yellow-400">0</span>
+      </div>
+      <div class="flex items-center gap-1"><span>✅</span><span id="correct-count" class="font-bold text-green-400">0</span>
+      </div>
+      <div class="flex items-center gap-1"><span>❌</span><span id="wrong-count" class="font-bold text-red-400">0</span>
+      </div>
+     </div>
+    </div>
+    <div class="flex justify-center mb-3">
+  <div class="card-glass rounded-full px-5 py-2 flex items-center gap-2">
+    <span class="text-sm text-gray-300">Kesempatan:</span>
+    <div id="chances-display" class="flex gap-1">
+      <span class="text-2xl chance-heart">❤️</span> 
+      <span class="text-2xl chance-heart">❤️</span>
+    </div>
+  </div>
+</div>
+    <div class="flex flex-col items-center mb-3 gap-2">
+     <div id="upload-warning" class="bg-gradient-to-r from-orange-500/30 to-yellow-500/30 border-2 border-yellow-500/50 rounded-xl px-4 py-2 text-center animate-pulse">
+      <p class="text-yellow-300 text-sm font-bold">📸 Unggah proses pengerjaanmu untuk lanjut!</p>
+     </div>
+     <div id="question-upload-zone" class="upload-zone card-glass rounded-2xl px-4 py-3 flex items-center gap-3 w-full max-w-xs justify-center"><input type="file" id="question-photo-input" accept="image/*" capture="environment" class="hidden">
+      <div id="question-upload-status" class="flex items-center gap-2"><span class="text-2xl">📷</span> <span class="text-sm text-gray-300">Klik untuk Upload Foto</span>
+      </div>
+      <div id="question-photo-done" class="hidden flex items-center gap-2"><span class="text-xl">✅</span> <span class="text-sm text-green-400 font-bold">Terupload!</span> <button id="view-question-photo" class="text-xs bg-white/20 px-2 py-1 rounded-full hover:bg-white/30">���️</button> <button id="change-question-photo" class="text-xs bg-white/20 px-2 py-1 rounded-full hover:bg-white/30">🔄</button>
+      </div>
+     </div>
+    </div>
+    <div class="flex-1 flex flex-col items-center overflow-auto">
+     <div id="question-box" class="card-glass card-glow rounded-3xl p-4 w-full max-w-lg text-center mb-4">
+      <p class="text-gray-400 text-sm mb-2">Tantangan <span id="current-q-num">1</span> dari 10</p>
+      <div id="story-image-container" class="mb-3 hidden">
+       <p id="story-image-title" class="font-title text-lg text-yellow-400 mb-2"></p>
+       <div id="story-image-wrapper" class="relative"><img id="story-image" class="story-image" src="" alt="Gambar tantangan">
+        <div id="story-image-fallback" class="story-image-fallback hidden">
+         📷
+        </div>
+       </div>
+      </div>
+      <div id="story-text" class="text-gray-200 mb-3 p-3 bg-white/5 rounded-xl text-left hidden"></div>
+      <div id="question" class="font-title text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-400">
+       Jawaban = ?
+      </div>
+     </div>
+     <div id="options" class="grid grid-cols-2 gap-3 w-full max-w-lg pb-4"><button class="option-btn py-4 rounded-2xl font-bold text-lg">A</button> <button class="option-btn py-4 rounded-2xl font-bold text-lg">B</button> <button class="option-btn py-4 rounded-2xl font-bold text-lg">C</button> <button class="option-btn py-4 rounded-2xl font-bold text-lg">D</button>
+     </div><button id="game-back-btn" class="text-gray-400 hover:text-white transition-colors text-sm mt-4">← Kembali ke Pilih Misi</button>
+    </div>
+   </div><!-- MATERI SCREEN -->
+   <div id="materi-screen" class="min-h-full flex flex-col items-center p-4 hidden overflow-auto">
+    <div class="text-center max-w-lg w-full py-6 relative">
+     <div class="absolute top-0 left-2 text-4xl animate-float opacity-50">
+      📜
+     </div>
+     <div class="absolute top-10 right-2 text-3xl animate-swing opacity-50">
+      🪄
+     </div>
+     <div class="text-7xl mb-4 animate-bounce-slow">
+      📚
+     </div>
+     <h2 class="font-title text-4xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-3 animate-glow-pulse">Gulungan Ilmu</h2>
+     <p class="text-gray-300 text-lg mb-6 flex items-center justify-center gap-2">Pelajari jurus-jurus ajaib sebelum bertarung! <span class="animate-wiggle">🧙‍♂️</span></p>
+     <div class="space-y-5 mb-6">
+      <div class="guide-box rounded-2xl p-6 text-left">
+       <div class="flex items-center gap-3 mb-4"><span class="text-5xl animate-swing">⚔️</span>
+        <h3 class="font-title text-2xl text-yellow-400">Jurus Penggabungan (+)</h3>
+       </div>
+       <p class="text-gray-200 text-lg mb-4">Kalau kamu punya sesuatu, lalu <span class="text-green-400 font-bold">dapat tambahan</span>, jumlahnya jadi <span class="text-green-400 font-bold">lebih banyak!</span></p>
+       <div class="bg-black/30 rounded-xl p-4">
+        <p class="text-gray-400 text-base mb-2">🎯 Bayangkan:</p>
+        <p class="text-base text-gray-300 mb-3">Kamu punya 3 permen, Ibu kasih 2 lagi</p>
+        <p class="text-xl text-center">🍬🍬🍬 + 🍬🍬 = 🍬🍬🍬🍬🍬</p>
+        <p class="text-center text-yellow-400 font-title text-xl mt-2">3 + 2 = 5 permen! 🎉</p>
+       </div>
+      </div>
+      <div class="guide-box rounded-2xl p-6 text-left">
+       <div class="flex items-center gap-3 mb-4"><span class="text-5xl animate-bounce-slow">🛡️</span>
+        <h3 class="font-title text-2xl text-cyan-400">Jurus Pengurangan (−)</h3>
+       </div>
+       <p class="text-gray-200 text-lg mb-4">Kalau kamu punya sesuatu, lalu <span class="text-red-400 font-bold">ada yang diambil</span>, jumlahnya jadi <span class="text-red-400 font-bold">lebih sedikit!</span></p>
+       <div class="bg-black/30 rounded-xl p-4">
+        <p class="text-gray-400 text-base mb-2">🎯 Bayangkan:</p>
+        <p class="text-base text-gray-300 mb-3">Kamu punya 5 balon, 2 terbang pergi</p>
+        <p class="text-xl text-center">🎈🎈🎈🎈🎈 − 🎈🎈 = 🎈🎈🎈</p>
+        <p class="text-center text-cyan-400 font-title text-xl mt-2">5 ��� 2 = 3 balon! 🎊</p>
+       </div>
+      </div>
+     </div><button id="materi-back-btn" class="btn-magic px-10 py-4 rounded-full font-bold text-xl text-gray-900 flex items-center justify-center gap-2 mx-auto"> <span>🏠</span> Kembali ke Menu </button>
+    </div>
+   </div><!-- PERINGKAT/LEADERBOARD SCREEN -->
+   <div id="peringkat-screen" class="min-h-full flex flex-col items-center p-4 hidden overflow-auto">
+    <div class="text-center max-w-lg w-full py-6 relative">
+     <div class="absolute top-0 left-2 text-4xl animate-float opacity-60">
+      🥇
+     </div>
+     <div class="absolute top-5 right-2 text-3xl animate-bounce-slow opacity-50">
+      🥈
+     </div>
+     <div class="absolute top-20 left-5 text-3xl animate-swing opacity-40">
+      🥉
+     </div>
+     <div class="text-6xl mb-4 animate-bounce-slow">
+      🏆
+     </div>
+     <h2 class="font-title text-3xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 mb-2 animate-glow-pulse">Papan Peringkat</h2>
+     <p class="text-gray-300 mb-6 flex items-center justify-center gap-2">Top 10 Pahlawan Terhebat! <span class="animate-wiggle">👑</span></p>
+     <div id="leaderboard-loading" class="card-glass rounded-2xl p-8 mb-6">
+      <div class="text-4xl animate-spin-slow mb-4">
+       ⏳
+      </div>
+      <p class="text-gray-400">Memuat data pahlawan...</p>
+     </div>
+     <div id="leaderboard-empty" class="card-glass rounded-2xl p-8 mb-6 hidden">
+      <div class="text-6xl mb-4">
+       🌟
+      </div>
+      <p class="text-gray-300 font-bold mb-2">Belum ada pahlawan!</p>
+      <p class="text-gray-400 text-sm">Jadilah yang pertama bermain dan masuk papan peringkat!</p>
+     </div>
+     <div id="leaderboard-list" class="space-y-3 mb-6 hidden"></div>
+     <div class="card-glass rounded-2xl p-4 mb-6">
+      <p class="font-title text-lg text-yellow-400 mb-3">🎖️ Keterangan Peringkat</p>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+       <div class="flex items-center gap-2"><span>👑</span><span class="text-yellow-300">Legenda (90-100%)</span>
+       </div>
+       <div class="flex items-center gap-2"><span>🦸</span><span class="text-purple-300">Pahlawan (70-89%)</span>
+       </div>
+       <div class="flex items-center gap-2"><span>⚔️</span><span class="text-cyan-300">Ksatria (50-69%)</span>
+       </div>
+       <div class="flex items-center gap-2"><span>🌱</span><span class="text-green-300">Petualang (0-49%)</span>
+       </div>
+      </div>
+     </div><button id="peringkat-back-btn" class="btn-magic px-8 py-3 rounded-full font-bold text-lg text-gray-900 flex items-center justify-center gap-2 mx-auto"> <span>🏠</span> Kembali ke Menu </button>
+    </div>
+   </div><!-- RESULT SCREEN -->
+   <div id="result-screen" class="min-h-full flex flex-col items-center p-4 hidden overflow-auto">
+    <div class="text-center max-w-lg w-full py-6 relative">
+     <div class="absolute top-0 left-5 text-4xl animate-float opacity-60">
+      🎉
+     </div>
+     <div class="absolute top-5 right-5 text-4xl animate-bounce-slow opacity-60">
+      🎊
+     </div>
+     <div class="absolute top-20 left-2 text-3xl animate-swing opacity-50">
+      🌟
+     </div>
+     <div id="result-emoji" class="text-8xl mb-4 animate-pop-in">
+      🏆
+     </div>
+     <h2 id="result-title" class="font-title text-3xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-pink-400 mb-2 animate-glow-pulse">Misi Selesai!</h2>
+     <p id="result-subtitle" class="text-xl text-gray-300 mb-6">Kerja bagus, Pahlawan!</p>
+     <div class="card-glass card-glow rounded-3xl p-6 mb-6">
+      <div class="bg-gradient-to-r from-yellow-500/30 to-orange-500/30 rounded-2xl p-4 mb-4 border-2 border-yellow-500/50">
+       <p class="text-yellow-400 text-5xl font-title" id="result-points">0</p>
+       <p class="text-yellow-300 text-sm">💎 Total Poin</p>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+       <div class="bg-green-500/20 rounded-2xl p-4">
+        <p class="text-green-400 text-4xl font-title" id="result-correct">0</p>
+        <p class="text-gray-400 text-sm">✅ Benar</p>
+       </div>
+       <div class="bg-red-500/20 rounded-2xl p-4">
+        <p class="text-red-400 text-4xl font-title" id="result-wrong">0</p>
+        <p class="text-gray-400 text-sm">❌ Salah</p>
+       </div>
+      </div>
+      <div class="flex justify-center gap-2 mb-4"><span id="star-1" class="text-4xl opacity-30">⭐</span> <span id="star-2" class="text-4xl opacity-30">⭐</span> <span id="star-3" class="text-4xl opacity-30">⭐</span>
+      </div>
+      <p id="result-message" class="text-gray-300">Terus berlatih ya!</p>
+      <div id="saving-indicator" class="mt-4 text-sm text-gray-400 hidden"><span class="animate-spin inline-block">⏳</span> Menyimpan skor...
+      </div>
+      <div id="saved-indicator" class="mt-4 text-sm text-green-400 hidden">
+       ✅ Skor tersimpan di papan peringkat!
+      </div>
+     </div><button id="play-again-btn" class="btn-magic px-10 py-4 rounded-full font-bold text-xl text-gray-900 w-full flex items-center justify-center gap-3 mb-4"> <span>🔄</span><span>MAIN LAGI</span><span>🎮</span> </button> <button id="view-leaderboard-btn" class="card-glass rounded-full px-8 py-3 font-bold text-lg text-yellow-400 w-full flex items-center justify-center gap-3 mb-4 hover:bg-white/10 transition-all"> <span>🏆</span><span>LIHAT PERINGKAT</span> </button> <button id="back-home-btn" class="text-gray-400 hover:text-white transition-colors text-sm">← Kembali ke Menu Utama</button>
+    </div>
+   </div>
+  </div><!-- Feedback Popup -->
+  <div id="feedback-box" class="feedback-box hidden">
+   <div id="feedback-content" class="feedback-content animate-pop-in">
+    <div id="feedback-emoji" class="text-6xl mb-2">
+     ✨
+    </div>
+    <p id="feedback-text" class="font-title text-2xl text-white">Hebat!</p>
+   </div>
+  </div><!-- Photo Preview Modal -->
+  <div id="photo-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+   <div class="relative max-w-lg w-full"><button id="close-photo-modal" class="absolute -top-12 right-0 text-white text-4xl hover:text-yellow-400">×</button> <img id="modal-photo" src="" alt="Foto proses pengerjaan" class="w-full rounded-2xl border-4 border-yellow-500/50">
+    <p class="text-center text-gray-300 mt-3">📷 Foto proses pengerjaan tantangan <span id="modal-question-num">1</span></p>
+   </div>
+  </div>
+  <script>
+
+
+    // ===== GOOGLE DRIVE FUNCTIONS =====
+// ===== UPLOAD FOTO KE SUPABASE STORAGE =====
+async function uploadPhotoToSupabase(file, studentName, questionNum) {
+  try {
+    const fileName = `${studentName}_Soal${questionNum}_${Date.now()}.jpg`;
+    const filePath = `${studentName}/${fileName}`;
+    
+    const { data, error } = await supabaseClient.storage
+      .from('student-photos')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+    
+    if (error) throw error;
+    
+    const { data: urlData } = supabaseClient.storage
+      .from('student-photos')
+      .getPublicUrl(filePath);
+    
+    console.log('✅ Photo uploaded:', fileName);
+    
+    return {
+      filePath: filePath,
+      fileUrl: urlData.publicUrl,
+      fileName: fileName
+    };
+  } catch (error) {
+    console.error('❌ Upload failed:', error);
+    throw error;
+  }
+}
+    // ===== SOAL CERITA PENGGABUNGAN - ZONA AKU HEBAT =====
+    const storyQuestionsAddPribadi = [
+      { 
+        image: "https://i.ibb.co.com/bMD20xR3/Chat-GPT-Image-Dec-8-2025-11-07-53-AM.png", 
+        imageTitle: "🎀 Ikat Rambut Ira dan Teman-teman", 
+        story: "Ira memiliki 12 ikat rambut. Puput memiliki 7 ikat rambut. Devi memiliki 8 ikat rambut dan Nita 13 ikat rambut. Ira memberikan 3 ikat rambut miliknya kepada Puput.", 
+        question: "Ikat rambut paling banyak saat ini dimiliki oleh?", 
+        options: ["Ira (9 ikat)", "Puput (10 ikat)", "Devi (8 ikat)", "Nita (13 ikat)"], 
+        answer: "Nita (13 ikat)" 
+      },
+      { 
+        image: "https://i.ibb.co.com/DDpmpKtk/Chat-GPT-Image-Dec-8-2025-11-17-06-AM.png", 
+        imageTitle: "🦢 Origami Burung Dini", 
+        story: "Dini akan membuat bentuk burung dari kertas lipat. Dini diberi 20 lembar kertas lipat dan dia sudah menyelesaikan semua kertas lipat. Ibu Dini datang dan menambahkan lagi 10 lembar kertas lipat.", 
+        question: "Bentuk burung yang akan Dini buat berjumlah berapa?", 
+        options: ["20 burung", "25 burung", "30 burung", "35 burung"], 
+        answer: "30 burung" 
+      },
+      { 
+        image: "https://i.ibb.co.com/ZRwT2kPx/Chat-GPT-Image-Dec-8-2025-11-22-39-AM.png", 
+        imageTitle: "🐟 Ikan Cupang Farel", 
+        story: "Farel memiliki 10 ikan cupang. Pagi ini saat akan memberi makan, Farel melihat ada 2 ikan cupang yang ia miliki mati. Jika Farel membeli 9 ikan cupang lagi...", 
+        question: "Banyak ikan cupang Farel menjadi berapa ekor?", 
+        options: ["15 ekor", "17 ekor", "19 ekor", "21 ekor"], 
+        answer: "17 ekor" 
+      },
+      { 
+        image: "https://i.ibb.co.com/B2sGsTPp/Gemini-Generated-Image-ichb1michb1michb.png", 
+        imageTitle: "🔴 Karet Gelang untuk Belajar", 
+        story: "Bu Rita meminta siswa untuk membawa karet gelang. Karet gelang akan digunakan untuk belajar matematika. Nana membawa 24 karet gelang, Hime membawa 17 karet gelang, Radit membawa 5 karet gelang. Bu Rita memberikan arahan agar karet gelang yang dibawa oleh Nana, Hime dan Radit dijadikan satu.", 
+        question: "Karet gelang yang mereka jadikan satu berjumlah berapa?", 
+        options: ["40 karet", "42 karet", "46 karet", "48 karet"], 
+        answer: "46 karet" 
+      },
+      { 
+        image: "https://i.ibb.co.com/6cVzHRQs/Gemini-Generated-Image-lascdplascdplasc.png", 
+        imageTitle: "🍳 Ikan Goreng Bu Pipit", 
+        story: "Bu Pipit menggoreng ikan dan menyajikannya di piring. Adik mengambil 2 ikan dan Kakak mengambil 2 ikan juga. Di piring masih ada 10 ikan.", 
+        question: "Bu Pipit menggoreng ikan sebanyak berapa?", 
+        options: ["10 ikan", "12 ikan", "14 ikan", "16 ikan"], 
+        answer: "14 ikan" 
+      },
+      { 
+        image: "https://i.ibb.co.com/LhD0gpDV/Gemini-Generated-Image-rwnxafrwnxafrwnx.png", 
+        imageTitle: "🔮 Bermain Kelereng di Taman", 
+        story: "Deka sedang bermain di taman dengan Samsi, mereka bermain kelereng. Deka membawa 25 kelereng dan Samsi membawa 20 kelereng. Mereka bermain bersama dengan kesepakatan jika kalah maka yang kalah memberikan 5 kelerengnya kepada si pemenang. Saat bermain kelereng ternyata Samsi kalah dari Deka dan memberikannya 5 kelereng miliknya kepada Deka.", 
+        question: "Jumlah kelereng Deka saat ini adalah?", 
+        options: ["25 kelereng", "28 kelereng", "30 kelereng", "35 kelereng"], 
+        answer: "30 kelereng" 
+      },
+      { 
+        image: "https://i.ibb.co.com/qMCn1bXR/Gemini-Generated-Image-ftnex2ftnex2ftne.png", 
+        imageTitle: "📚 Rak Buku Doni", 
+        story: "Di rumah, Doni senang sekali membaca buku sampai Ibu membelikan Doni rak khusus untuk buku yang suka Doni baca. Di rak atas ada 21 buku cerita nonfiksi. Di rak bawah ada 15 buku cerita fiksi. Ibu ingin semua buku fiksi dan nonfiksi milik Doni diletakkan di rak yang sama.", 
+        question: "Berapa jumlah semua buku yang harus dipindahkan ke rak yang baru?", 
+        options: ["30 buku", "33 buku", "36 buku", "39 buku"], 
+        answer: "36 buku" 
+      },
+      { 
+        image: "https://i.ibb.co.com/7xmK7ZXL/Gemini-Generated-Image-749zsw749zsw749z.png", 
+        imageTitle: "🥭 Panen Buah Paman", 
+        story: "Paman sedang mengecek kebun miliknya. Hari ini Paman memanen 18 buah mangga dan 31 jeruk. Kemudian hasil panen mangganya ia bagikan kepada tetangganya 10 buah mangga.", 
+        question: "Berapa jumlah seluruh buah yang masih dimiliki Paman?", 
+        options: ["35 buah", "37 buah", "39 buah", "41 buah"], 
+        answer: "39 buah" 
+      },
+      { 
+        image: "https://i.ibb.co.com/7dykv9V3/Gemini-Generated-Image-deswntdeswntdesw.png", 
+        imageTitle: "🎣 Memancing Bersama Keluarga", 
+        story: "Ayah mengajak kakak pergi memancing. Setibanya di sungai ternyata ada kakek juga yang akan memancing. Hari ini Ayah menangkap 26 ikan, Kakak menangkap 8 ikan dan hasil tangkapan ikan kakek diberikan kepada mereka yaitu 12 ikan.", 
+        question: "Berapa total ikan yang dimiliki Ayah dan Kakak sekarang?", 
+        options: ["42 ikan", "44 ikan", "46 ikan", "48 ikan"], 
+        answer: "46 ikan" 
+      },
+      { 
+        image: "https://i.ibb.co.com/35GHZdg7/Gemini-Generated-Image-nunsstnunsstnuns.png", 
+        imageTitle: "📖 Waktu Belajar Tika", 
+        story: "Tika belajar pelajaran matematika selama 35 menit. Ia kemudian istirahat 10 menit. Setelah istirahat, ia melanjutkan belajar bahasa Indonesia selama 20 menit.", 
+        question: "Berapa total waktu yang digunakan Tika untuk belajar?", 
+        options: ["45 menit", "50 menit", "55 menit", "65 menit"], 
+        answer: "55 menit" 
+      }
+    ];
+
+    // Soal pengurangan - menggunakan format yang sama
+    const storyQuestionsSubPribadi = [
+      { 
+        image: "https://i.ibb.co.com/bMD20xR3/Chat-GPT-Image-Dec-8-2025-11-07-53-AM.png", 
+        imageTitle: "🎀 Ikat Rambut Ira", 
+        story: "Ira memiliki 25 ikat rambut. Ia memberikan 12 ikat rambut kepada Puput dan 5 ikat rambut kepada Devi.", 
+        question: "Berapa ikat rambut yang tersisa untuk Ira?", 
+        options: ["6 ikat rambut", "8 ikat rambut", "10 ikat rambut", "12 ikat rambut"], 
+        answer: "8 ikat rambut" 
+      },
+      { 
+        image: "https://i.ibb.co.com/DDpmpKtk/Chat-GPT-Image-Dec-8-2025-11-17-06-AM.png", 
+        imageTitle: "🦢 Origami Burung Dini", 
+        story: "Dini sudah membuat 30 origami burung. Ia memberikan 10 origami kepada adiknya dan 8 origami kepada temannya.", 
+        question: "Berapa origami burung yang masih dimiliki Dini?", 
+        options: ["10 burung", "12 burung", "14 burung", "16 burung"], 
+        answer: "12 burung" 
+      },
+      { 
+        image: "https://i.ibb.co.com/ZRwT2kPx/Chat-GPT-Image-Dec-8-2025-11-22-39-AM.png", 
+        imageTitle: "���� Ikan Cupang Farel", 
+        story: "Farel memiliki 25 ikan cupang. Sayangnya 8 ikan mati dan 6 ikan diberikan kepada temannya.", 
+        question: "Berapa ikan cupang yang masih dimiliki Farel?", 
+        options: ["9 ekor", "11 ekor", "13 ekor", "15 ekor"], 
+        answer: "11 ekor" 
+      },
+      { 
+        image: "https://i.ibb.co.com/B2sGsTPp/Gemini-Generated-Image-ichb1michb1michb.png", 
+        imageTitle: "🔴 Karet Gelang", 
+        story: "Bu Rita memiliki 50 karet gelang. Ia membagikan 24 karet kepada kelompok A dan 17 karet kepada kelompok B.", 
+        question: "Berapa karet gelang yang tersisa?", 
+        options: ["7 karet", "9 karet", "11 karet", "13 karet"], 
+        answer: "9 karet" 
+      },
+      { 
+        image: "https://i.ibb.co.com/6cVzHRQs/Gemini-Generated-Image-lascdplascdplasc.png", 
+        imageTitle: "🍳 Ikan Goreng Bu Pipit", 
+        story: "Bu Pipit menggoreng 20 ikan. Adik mengambil 4 ikan, Kakak mengambil 6 ikan, dan Ayah mengambil 3 ikan.", 
+        question: "Berapa ikan yang tersisa di piring?", 
+        options: ["5 ikan", "7 ikan", "9 ikan", "11 ikan"], 
+        answer: "7 ikan" 
+      },
+      { 
+        image: "https://i.ibb.co.com/LhD0gpDV/Gemini-Generated-Image-rwnxafrwnxafrwnx.png", 
+        imageTitle: "🔮 Bermain Kelereng", 
+        story: "Deka memiliki 35 kelereng. Saat bermain dengan Samsi, Deka kalah dan harus memberikan 12 kelereng kepada Samsi.", 
+        question: "Berapa kelereng yang masih dimiliki Deka?", 
+        options: ["21 kelereng", "23 kelereng", "25 kelereng", "27 kelereng"], 
+        answer: "23 kelereng" 
+      },
+      { 
+        image: "https://i.ibb.co.com/qMCn1bXR/Gemini-Generated-Image-ftnex2ftnex2ftne.png", 
+        imageTitle: "📚 Rak Buku Doni", 
+        story: "Doni memiliki 40 buku di rak bukunya. Ia meminjamkan 15 buku kepada Andi dan 9 buku kepada Budi.", 
+        question: "Berapa buku yang masih ada di rak Doni?", 
+        options: ["14 buku", "16 buku", "18 buku", "20 buku"], 
+        answer: "16 buku" 
+      },
+      { 
+        image: "https://i.ibb.co.com/7xmK7ZXL/Gemini-Generated-Image-749zsw749zsw749z.png", 
+        imageTitle: "🥭 Panen Buah Paman", 
+        story: "Paman memanen 45 buah mangga. Ia memberikan 18 mangga kepada tetangga dan 12 mangga kepada keluarga.", 
+        question: "Berapa mangga yang tersisa untuk Paman?", 
+        options: ["13 mangga", "15 mangga", "17 mangga", "19 mangga"], 
+        answer: "15 mangga" 
+      },
+      { 
+        image: "https://i.ibb.co.com/7dykv9V3/Gemini-Generated-Image-deswntdeswntdesw.png", 
+        imageTitle: "🎣 Memancing Bersama Keluarga", 
+        story: "Ayah dan Kakak menangkap 50 ikan. Mereka memberikan 18 ikan kepada kakek dan 14 ikan kepada tetangga.", 
+        question: "Berapa ikan yang tersisa untuk dibawa pulang?", 
+        options: ["16 ikan", "18 ikan", "20 ikan", "22 ikan"], 
+        answer: "18 ikan" 
+      },
+      { 
+        image: "https://i.ibb.co.com/35GHZdg7/Gemini-Generated-Image-nunsstnunsstnuns.png", 
+        imageTitle: "📖 Waktu Belajar Tika", 
+        story: "Tika berencana belajar selama 60 menit. Ia sudah belajar matematika 25 menit dan bahasa Indonesia 18 menit.", 
+        question: "Berapa menit lagi waktu belajar Tika yang tersisa?", 
+        options: ["15 menit", "17 menit", "19 menit", "21 menit"], 
+        answer: "17 menit" 
+      }
+    ];
+
+    // ===== SOAL CERITA PENGGABUNGAN - MISI TIM HEBAT =====
+    const storyQuestionsAddSosial = [
+      { 
+        image: "https://i.ibb.co.com/VcFDg4zD/Gemini-Generated-Image-gohvbqgohvbqgohv.png", 
+        imageTitle: "🧹 Kerja Bakti Kampung", 
+        story: "Di acara kerja bakti kampung, kelompok A membawa 18 sapu dan kelompok B membawa 27 sapu. Jika kedua kelompok digabung, berapa jumlah sapu seluruhnya?", 
+        question: "Berapa jumlah sapu seluruhnya?", 
+        options: ["42 sapu", "45 sapu", "47 sapu", "50 sapu"], 
+        answer: "45 sapu" 
+      },
+      { 
+        image: "https://i.ibb.co.com/v4dLzBxj/Gemini-Generated-Image-6i43gp6i43gp6i43.png", 
+        imageTitle: "🍌 Belanja di Pasar Tradisional", 
+        story: "Pada pasar tradisional, Ibu Sari membeli 24 pisang dan 19 pisang lagi di toko sebelah.", 
+        question: "Jumlah pisang yang dibeli Ibu Sari adalah?", 
+        options: ["40 pisang", "42 pisang", "43 pisang", "45 pisang"], 
+        answer: "43 pisang" 
+      },
+      { 
+        image: "https://i.ibb.co.com/kgyptNMm/Gemini-Generated-Image-mtndrjmtndrjmtnd.png", 
+        imageTitle: "💃 Lomba Tari Daerah", 
+        story: "Dalam lomba tari daerah, kelas 2A menampilkan 14 siswa dan kelas 2B menampilkan 26 siswa.", 
+        question: "Jumlah penari dari kedua kelas adalah?", 
+        options: ["38 siswa", "40 siswa", "42 siswa", "44 siswa"], 
+        answer: "40 siswa" 
+      },
+      { 
+        image: "https://i.ibb.co.com/NdCJVsT8/Gemini-Generated-Image-e2u56te2u56te2u5.png", 
+        imageTitle: "📚 Perpustakaan Desa", 
+        story: "Di perpustakaan desa, ada 35 buku cerita rakyat dan 18 buku dongeng nusantara.", 
+        question: "Berapakah jumlah seluruh buku tersebut?", 
+        options: ["50 buku", "51 buku", "53 buku", "55 buku"], 
+        answer: "53 buku" 
+      },
+      { 
+        image: "https://i.ibb.co.com/4Zvbs8qJ/Gemini-Generated-Image-bh5o8nbh5o8nbh5o.png", 
+        imageTitle: "🇮🇩 Peringatan Hari Kemerdekaan", 
+        story: "Saat peringatan hari kemerdekaan, RT 01 menyiapkan 28 bendera dan RT 02 menyiapkan 32 bendera.", 
+        question: "Berapa bendera yang disiapkan seluruhnya?", 
+        options: ["55 bendera", "58 bendera", "60 bendera", "62 bendera"], 
+        answer: "60 bendera" 
+      },
+      { 
+        image: "https://i.ibb.co.com/xqxVwdXT/Gemini-Generated-Image-w432etw432etw432.png", 
+        imageTitle: "🍚 Acara Sedekah Bumi", 
+        story: "Pada acara sedekah bumi, ada 17 tumpeng kecil dan 29 tumpeng besar.", 
+        question: "Jumlah tumpeng semuanya adalah?", 
+        options: ["44 tumpeng", "45 tumpeng", "46 tumpeng", "48 tumpeng"], 
+        answer: "46 tumpeng" 
+      },
+      { 
+        image: "https://i.ibb.co.com/0yNFWx5G/Gemini-Generated-Image-3z5ro63z5ro63z5r.png", 
+        imageTitle: "🎭 Sanggar Seni", 
+        story: "Di sanggar seni, pagi hari datang 23 anak. Siang hari datang lagi 18 anak.", 
+        question: "Berapa jumlah anak di sanggar seni?", 
+        options: ["39 anak", "40 anak", "41 anak", "43 anak"], 
+        answer: "41 anak" 
+      },
+      { 
+        image: "https://i.ibb.co.com/rKWLV5sR/Gemini-Generated-Image-yayt31yayt31yayt.png", 
+        imageTitle: "🎵 Musik Tradisional", 
+        story: "Kelompok musik tradisional memiliki 25 alat musik. Kelompok lain membawa 17 alat musik.", 
+        question: "Apakah jumlah seluruh alat musik lebih dari 40?", 
+        options: ["Tidak, hanya 40", "Tidak, hanya 38", "Ya, ada 42", "Ya, ada 44"], 
+        answer: "Ya, ada 42" 
+      },
+      { 
+        image: "https://i.ibb.co.com/Kpy7VP0w/Gemini-Generated-Image-1fs9741fs9741fs9.png", 
+        imageTitle: "🎪 Pentas Budaya", 
+        story: "Di acara pentas budaya, terdapat 34 penonton anak-anak dan 16 penonton dewasa.", 
+        question: "Jumlah penonton adalah?", 
+        options: ["48 penonton", "50 penonton", "52 penonton", "54 penonton"], 
+        answer: "50 penonton" 
+      },
+      { 
+        image: "https://i.ibb.co.com/x8RGMFv2/Gemini-Generated-Image-4z5z534z5z534z5z.png", 
+        imageTitle: "🧁 Bazar Sekolah", 
+        story: "Pada bazar sekolah, hari pertama terjual 29 kue tradisional dan hari kedua terjual 21 kue.", 
+        question: "Berapa total kue yang terjual?", 
+        options: ["48 kue", "49 kue", "50 kue", "52 kue"], 
+        answer: "50 kue" 
+      }
+    ];
+    const storyQuestionsSubSosial = [
+      { 
+        image: "https://i.ibb.co.com/VcFDg4zD/Gemini-Generated-Image-gohvbqgohvbqgohv.png", 
+        imageTitle: "🧹 Kerja Bakti Kampung", 
+        story: "Di acara kerja bakti kampung, warga menyiapkan 45 sapu. Setelah digunakan, 18 sapu rusak dan harus dibuang.", 
+        question: "Berapa sapu yang masih bisa dipakai?", 
+        options: ["25 sapu", "27 sapu", "29 sapu", "31 sapu"], 
+        answer: "27 sapu" 
+      },
+      { 
+        image: "https://i.ibb.co.com/v4dLzBxj/Gemini-Generated-Image-6i43gp6i43gp6i43.png", 
+        imageTitle: "🍌 Belanja di Pasar Tradisional", 
+        story: "Ibu Sari membeli 43 pisang di pasar tradisional. Ia memberikan 19 pisang kepada tetangganya.", 
+        question: "Berapa pisang yang tersisa untuk Ibu Sari?", 
+        options: ["22 pisang", "24 pisang", "26 pisang", "28 pisang"], 
+        answer: "24 pisang" 
+      },
+      { 
+        image: "https://i.ibb.co.com/kgyptNMm/Gemini-Generated-Image-mtndrjmtndrjmtnd.png", 
+        imageTitle: "💃 Lomba Tari Daerah", 
+        story: "Dalam lomba tari daerah, ada 40 siswa yang ikut. Setelah seleksi, 14 siswa tidak lolos ke babak final.", 
+        question: "Berapa siswa yang lolos ke babak final?", 
+        options: ["24 siswa", "26 siswa", "28 siswa", "30 siswa"], 
+        answer: "26 siswa" 
+      },
+      { 
+        image: "https://i.ibb.co.com/NdCJVsT8/Gemini-Generated-Image-e2u56te2u56te2u5.png", 
+        imageTitle: "📚 Perpustakaan Desa", 
+        story: "Di perpustakaan desa ada 53 buku. Sebanyak 18 buku dongeng nusantara dipinjam warga.", 
+        question: "Berapa buku yang tersisa di perpustakaan?", 
+        options: ["33 buku", "35 buku", "37 buku", "39 buku"], 
+        answer: "35 buku" 
+      },
+      { 
+        image: "https://i.ibb.co.com/4Zvbs8qJ/Gemini-Generated-Image-bh5o8nbh5o8nbh5o.png", 
+        imageTitle: "🇮🇩 Peringatan Hari Kemerdekaan", 
+        story: "Saat peringatan hari kemerdekaan, warga menyiapkan 60 bendera. Setelah acara, 28 bendera rusak terkena hujan.", 
+        question: "Berapa bendera yang masih bagus?", 
+        options: ["30 bendera", "32 bendera", "34 bendera", "36 bendera"], 
+        answer: "32 bendera" 
+      },
+      { 
+        image: "https://i.ibb.co.com/xqxVwdXT/Gemini-Generated-Image-w432etw432etw432.png", 
+        imageTitle: "🍚 Acara Sedekah Bumi", 
+        story: "Pada acara sedekah bumi, warga membuat 46 tumpeng. Sebanyak 29 tumpeng besar sudah dibagikan.", 
+        question: "Berapa tumpeng yang belum dibagikan?", 
+        options: ["15 tumpeng", "17 tumpeng", "19 tumpeng", "21 tumpeng"], 
+        answer: "17 tumpeng" 
+      },
+      { 
+        image: "https://i.ibb.co.com/0yNFWx5G/Gemini-Generated-Image-3z5ro63z5ro63z5r.png", 
+        imageTitle: "🎭 Sanggar Seni", 
+        story: "Di sanggar seni ada 41 anak yang berlatih. Siang hari, 18 anak pulang lebih awal.", 
+        question: "Berapa anak yang masih berlatih?", 
+        options: ["21 anak", "23 anak", "25 anak", "27 anak"], 
+        answer: "23 anak" 
+      },
+      { 
+        image: "https://i.ibb.co.com/rKWLV5sR/Gemini-Generated-Image-yayt31yayt31yayt.png", 
+        imageTitle: "🎵 Musik Tradisional", 
+        story: "Kelompok musik tradisional memiliki 42 alat musik. Sebanyak 17 alat musik dipinjamkan ke kelompok lain.", 
+        question: "Berapa alat musik yang tersisa?", 
+        options: ["23 alat", "25 alat", "27 alat", "29 alat"], 
+        answer: "25 alat" 
+      },
+      { 
+        image: "https://i.ibb.co.com/Kpy7VP0w/Gemini-Generated-Image-1fs9741fs9741fs9.png", 
+        imageTitle: "🎪 Pentas Budaya", 
+        story: "Di acara pentas budaya ada 50 penonton. Setelah istirahat, 16 penonton dewasa pulang.", 
+        question: "Berapa penonton yang masih menonton?", 
+        options: ["32 penonton", "34 penonton", "36 penonton", "38 penonton"], 
+        answer: "34 penonton" 
+      },
+      { 
+        image: "https://i.ibb.co.com/x8RGMFv2/Gemini-Generated-Image-4z5z534z5z534z5z.png", 
+        imageTitle: "🧁 Bazar Sekolah", 
+        story: "Pada bazar sekolah tersedia 50 kue tradisional. Hari pertama terjual 29 kue.", 
+        question: "Berapa kue yang tersisa untuk hari kedua?", 
+        options: ["19 kue", "21 kue", "23 kue", "25 kue"], 
+        answer: "21 kue" 
+      }
+    ];
+    
+    // ===== SOAL CERITA PENGGABUNGAN - MISI ILMUAN CILIK =====
+    const storyQuestionsAddSaintifik = [
+      { 
+        image: "https://i.ibb.co.com/20S6XX1T/Gemini-Generated-Image-mee0romee0romee0.png", 
+        imageTitle: "✏️ Pensil Merah dan Biru", 
+        story: "Di meja ada 12 pensil merah dan 18 pensil biru. Agar jumlah pensil merah menjadi sama dengan pensil biru, berapa pensil lagi yang harus ditambahkan?", 
+        question: "Berapa pensil merah yang harus ditambahkan?", 
+        options: ["4 pensil", "5 pensil", "6 pensil", "8 pensil"], 
+        answer: "6 pensil" 
+      },
+      { 
+        image: "https://i.ibb.co.com/k6PQy7md/Gemini-Generated-Image-3eoj3i3eoj3i3eoj.png", 
+        imageTitle: "🔮 Kelereng Ani dan Budi", 
+        story: "Ani memiliki 14 kelereng. Budi memiliki 9 kelereng lebih banyak dari Ani. Berapa jumlah kelereng Ani dan Budi bersama-sama?", 
+        question: "Berapa jumlah kelereng mereka berdua?", 
+        options: ["32 kelereng", "35 kelereng", "37 kelereng", "40 kelereng"], 
+        answer: "37 kelereng" 
+      },
+      { 
+        image: "https://i.ibb.co.com/Xx4qvYq5/Gemini-Generated-Image-neg6hnneg6hnneg6.png", 
+        imageTitle: "👨‍🎓 Siswa di Kelas", 
+        story: "Di kelas terdapat 20 siswa. Pada hari Senin, jumlah siswa bertambah 8 orang. Hari Selasa bertambah lagi sehingga jumlah siswa menjadi 35.", 
+        question: "Berapa siswa yang datang pada hari Selasa?", 
+        options: ["5 siswa", "6 siswa", "7 siswa", "8 siswa"], 
+        answer: "7 siswa" 
+      },
+      { 
+        image: "https://i.ibb.co.com/kszBrbbZ/Gemini-Generated-Image-uu8r1xuu8r1xuu8r.png", 
+        imageTitle: "🍎 Apel di Keranjang", 
+        story: "Terdapat 15 apel di keranjang A dan 25 apel di keranjang B. Sebagian apel dari keranjang B dipindahkan ke keranjang A sehingga jumlah apel di kedua keranjang sama.", 
+        question: "Berapa jumlah apel di setiap keranjang setelah dipindah?", 
+        options: ["18 apel", "19 apel", "20 apel", "22 apel"], 
+        answer: "20 apel" 
+      },
+      { 
+        image: "https://i.ibb.co.com/W4jC1d61/Gemini-Generated-Image-mfkmz2mfkmz2mfkm.png", 
+        imageTitle: "📖 Siti Membaca Buku", 
+        story: "Siti membaca 12 halaman buku di pagi hari. Siang hari ia membaca lebih banyak 8 halaman dari pagi hari.", 
+        question: "Berapa jumlah halaman yang dibaca Siti?", 
+        options: ["28 halaman", "30 halaman", "32 halaman", "34 halaman"], 
+        answer: "32 halaman" 
+      },
+      { 
+        image: "https://i.ibb.co.com/76mWMF7/Gemini-Generated-Image-k2ekfqk2ekfqk2ek.png", 
+        imageTitle: "🐟 Ikan di Kolam", 
+        story: "Jumlah ikan di kolam ada 18 ekor. Kolam ditambah ikan sehingga jumlahnya 3 kali lebih banyak dari semula.", 
+        question: "Berapa ikan yang ditambahkan?", 
+        options: ["32 ikan", "34 ikan", "36 ikan", "38 ikan"], 
+        answer: "36 ikan" 
+      },
+      { 
+        image: "https://i.ibb.co.com/zWyxsJGX/Gemini-Generated-Image-wim2vewim2vewim2.png", 
+        imageTitle: "📚 Buku di Rak", 
+        story: "Di rak buku ada 14 buku cerita dan 21 buku pengetahuan. Agar jumlah buku cerita sama dengan buku pengetahuan, berapa buku cerita yang harus ditambahkan?", 
+        question: "Berapa buku cerita yang harus ditambahkan?", 
+        options: ["5 buku", "6 buku", "7 buku", "8 buku"], 
+        answer: "7 buku" 
+      },
+      { 
+        image: "https://i.ibb.co.com/Y9JpNRv/Gemini-Generated-Image-1izxsq1izxsq1izx.png", 
+        imageTitle: "🍬 Permen Dina dan Rani", 
+        story: "Dina memiliki 16 permen. Rani memiliki 24 permen. Mereka ingin membagi permen sehingga jumlahnya sama banyak.", 
+        question: "Berapa jumlah permen masing-masing setelah digabung dan dibagi rata?", 
+        options: ["18 permen", "19 permen", "20 permen", "22 permen"], 
+        answer: "20 permen" 
+      },
+      { 
+        image: "https://i.ibb.co.com/qMCQsjmP/Gemini-Generated-Image-ugkantugkantugka-1.png", 
+        imageTitle: "🍇 Buah di Piring", 
+        story: "Jumlah buah di piring ada 28 buah. Jika ditambah beberapa buah, jumlahnya menjadi bilangan genap terbesar di bawah 40.", 
+        question: "Berapa buah yang ditambahkan?", 
+        options: ["8 buah", "9 buah", "10 buah", "12 buah"], 
+        answer: "10 buah" 
+      },
+      { 
+        image: "https://i.ibb.co.com/200929Q6/Gemini-Generated-Image-e3tpw8e3tpw8e3tp.png", 
+        imageTitle: "👧👦 Siswa Laki-laki dan Perempuan", 
+        story: "Jumlah siswa laki-laki dan perempuan di kelas adalah 36 siswa. Siswa laki-laki berjumlah 4 lebih banyak dari siswa perempuan.", 
+        question: "Berapa jumlah siswa perempuan?", 
+        options: ["14 siswa", "15 siswa", "16 siswa", "18 siswa"], 
+        answer: "16 siswa" 
+      }
+    ];
+    
+    const storyQuestionsSubSaintifik = [
+      { 
+        image: "https://i.ibb.co.com/20S6XX1T/Gemini-Generated-Image-mee0romee0romee0.png", 
+        imageTitle: "✏️ Pensil Merah dan Biru", 
+        story: "Di meja ada 30 pensil. Setelah dihitung, ternyata ada 18 pensil biru. Sisanya adalah pensil merah.", 
+        question: "Berapa jumlah pensil merah?", 
+        options: ["10 pensil", "12 pensil", "14 pensil", "16 pensil"], 
+        answer: "12 pensil" 
+      },
+      { 
+        image: "https://i.ibb.co.com/k6PQy7md/Gemini-Generated-Image-3eoj3i3eoj3i3eoj.png", 
+        imageTitle: "🔮 Kelereng Ani dan Budi", 
+        story: "Ani dan Budi memiliki 37 kelereng bersama-sama. Jika Ani memiliki 14 kelereng, berapa kelereng Budi?", 
+        question: "Berapa kelereng yang dimiliki Budi?", 
+        options: ["21 kelereng", "23 kelereng", "25 kelereng", "27 kelereng"], 
+        answer: "23 kelereng" 
+      },
+      { 
+        image: "https://i.ibb.co.com/Xx4qvYq5/Gemini-Generated-Image-neg6hnneg6hnneg6.png", 
+        imageTitle: "👨‍🎓 Siswa di Kelas", 
+        story: "Di kelas ada 35 siswa. Pada hari Senin, 8 siswa tidak masuk karena sakit. Hari Selasa, 7 siswa lagi izin.", 
+        question: "Berapa siswa yang hadir pada hari Selasa?", 
+        options: ["18 siswa", "20 siswa", "22 siswa", "24 siswa"], 
+        answer: "20 siswa" 
+      },
+      { 
+        image: "https://i.ibb.co.com/kszBrbbZ/Gemini-Generated-Image-uu8r1xuu8r1xuu8r.png", 
+        imageTitle: "🍎 Apel di Keranjang", 
+        story: "Terdapat 40 apel di keranjang. Sebagian apel dibagikan sehingga tersisa 20 apel di keranjang.", 
+        question: "Berapa apel yang sudah dibagikan?", 
+        options: ["18 apel", "20 apel", "22 apel", "24 apel"], 
+        answer: "20 apel" 
+      },
+      { 
+        image: "https://i.ibb.co.com/W4jC1d61/Gemini-Generated-Image-mfkmz2mfkmz2mfkm.png", 
+        imageTitle: "📖 Siti Membaca Buku", 
+        story: "Siti ingin membaca 32 halaman buku hari ini. Pagi hari ia sudah membaca 12 halaman.", 
+        question: "Berapa halaman lagi yang harus dibaca Siti?", 
+        options: ["18 halaman", "20 halaman", "22 halaman", "24 halaman"], 
+        answer: "20 halaman" 
+      },
+      { 
+        image: "https://i.ibb.co.com/76mWMF7/Gemini-Generated-Image-k2ekfqk2ekfqk2ek.png", 
+        imageTitle: "🐟 Ikan di Kolam", 
+        story: "Jumlah ikan di kolam ada 54 ekor. Setelah beberapa ikan dijual, tersisa 18 ekor ikan di kolam.", 
+        question: "Berapa ikan yang sudah dijual?", 
+        options: ["32 ikan", "34 ikan", "36 ikan", "38 ikan"], 
+        answer: "36 ikan" 
+      },
+      { 
+        image: "https://i.ibb.co.com/zWyxsJGX/Gemini-Generated-Image-wim2vewim2vewim2.png", 
+        imageTitle: "📚 Buku di Rak", 
+        story: "Di rak buku ada 35 buku. Setelah beberapa buku pengetahuan dipinjam, tersisa 14 buku cerita di rak.", 
+        question: "Berapa buku pengetahuan yang dipinjam?", 
+        options: ["19 buku", "21 buku", "23 buku", "25 buku"], 
+        answer: "21 buku" 
+      },
+      { 
+        image: "https://i.ibb.co.com/Y9JpNRv/Gemini-Generated-Image-1izxsq1izxsq1izx.png", 
+        imageTitle: "🍬 Permen Dina dan Rani", 
+        story: "Dina dan Rani memiliki 40 permen bersama. Setelah dibagi rata, masing-masing mendapat 20 permen. Rani memberikan beberapa permen kepada adiknya sehingga Rani hanya punya 16 permen.", 
+        question: "Berapa permen yang diberikan Rani kepada adiknya?", 
+        options: ["2 permen", "4 permen", "6 permen", "8 permen"], 
+        answer: "4 permen" 
+      },
+      { 
+        image: "https://i.ibb.co.com/qMCQsjmP/Gemini-Generated-Image-ugkantugkantugka-1.png", 
+        imageTitle: "🍇 Buah di Piring", 
+        story: "Jumlah buah di piring ada 38 buah (bilangan genap terbesar di bawah 40). Setelah dimakan beberapa buah, tersisa 28 buah.", 
+        question: "Berapa buah yang sudah dimakan?", 
+        options: ["8 buah", "10 buah", "12 buah", "14 buah"], 
+        answer: "10 buah" 
+      },
+      { 
+        image: "https://i.ibb.co.com/200929Q6/Gemini-Generated-Image-e3tpw8e3tpw8e3tp.png", 
+        imageTitle: "👧👦 Siswa Laki-laki dan Perempuan", 
+        story: "Jumlah siswa di kelas adalah 36 siswa. Jika siswa laki-laki berjumlah 20 orang, berapa siswa perempuan?", 
+        question: "Berapa jumlah siswa perempuan?", 
+        options: ["14 siswa", "16 siswa", "18 siswa", "20 siswa"], 
+        answer: "16 siswa" 
+      }
+    ];
+
+    // ===== GAME STATE =====
+    const defaultConfig = { 
+      game_title: 'Petualangan Kerajaan Angka',
+      motivation_text: '✨ Jadilah Pahlawan Matematika! ✨'
+    };
+    
+    let gameState = {
+  playerName: '', skill: 'add', mission: 'pribadi',
+  currentQ: 0, totalQ: 10, correct: 0, wrong: 0, points: 0,
+  timer: 60, maxTimer: 60, timerInterval: null, isAnswering: false,
+  /* answer: '', chances: 3, maxChances: 3, questionPhotos: {}, history: [], */
+  answer: '', chances: 2, maxChances: 2, questionPhotos: {}, history: [],
+  sessionId: null,
+  startedAt: null
+};
+    
+    let leaderboardData = [];
+
+    // ===== DATA SDK HANDLER =====
+    const dataHandler = {
+      onDataChanged(data) {
+        leaderboardData = data.sort((a, b) => b.points - a.points);
+        renderLeaderboard();
+      }
+    };
+
+    // ===== INIT SDK =====
+    // ===== INIT =====
+createStars();
+console.log('🎮 Game initialized');
+
+    // ===== LEADERBOARD FUNCTIONS =====
+    function getRankInfo(percentage) {
+      if (percentage >= 90) return { icon: '👑', title: 'Legenda', color: 'text-yellow-400' };
+      if (percentage >= 70) return { icon: '🦸', title: 'Pahlawan', color: 'text-purple-400' };
+      if (percentage >= 50) return { icon: '⚔️', title: 'Ksatria', color: 'text-cyan-400' };
+      return { icon: '🌱', title: 'Petualang', color: 'text-green-400' };
+    }
+    
+    function renderLeaderboard() {
+      const loadingEl = document.getElementById('leaderboard-loading');
+      const emptyEl = document.getElementById('leaderboard-empty');
+      const listEl = document.getElementById('leaderboard-list');
+      
+      loadingEl.classList.add('hidden');
+      
+      if (leaderboardData.length === 0) {
+        emptyEl.classList.remove('hidden');
+        listEl.classList.add('hidden');
+        return;
+      }
+      
+      emptyEl.classList.add('hidden');
+      listEl.classList.remove('hidden');
+      
+      const top10 = leaderboardData.slice(0, 10);
+      
+      listEl.innerHTML = top10.map((player, index) => {
+        const rankInfo = getRankInfo(player.percentage || 0);
+        const positionIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+        const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+        
+        return `
+          <div class="leaderboard-item card-glass rounded-2xl p-4 border-2 border-white/10 ${rankClass}">
+            <div class="flex items-center gap-4">
+              <div class="text-3xl font-title w-12 text-center">${positionIcon}</div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">${rankInfo.icon}</span>
+                  <span class="font-bold ${rankInfo.color}">${player.player_name || 'Pahlawan'}</span>
+                </div>
+                <p class="text-gray-400 text-xs">${rankInfo.title} • ${player.skill === 'add' ? '⚔️ Penggabungan' : '🛡️ Pengurangan'}</p>
+              </div>
+              <div class="text-right">
+                <p class="font-title text-xl text-yellow-400">${player.points || 0} 💎</p>
+                <p class="text-gray-400 text-xs">✅ ${player.correct || 0}/10</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+   async function saveSubmissionToSupabase() {
+  const savingEl = document.getElementById('saving-indicator');
+  const savedEl = document.getElementById('saved-indicator');
+  
+  savingEl.classList.remove('hidden');
+  
+  try {
+    const questions = getStoryQuestions();
+    
+    const answersArray = gameState.history.map((h, index) => {
+      const photoData = gameState.questionPhotos[index];
+      const question = questions[index];
+      
+      return {
+        question_number: index + 1,
+        question_title: question.imageTitle,
+        question_story: question.story,
+        question_text: question.question,
+        selected_answer: h.answer || 'Tidak dijawab',
+        correct_answer: question.answer,
+        is_correct: h.isCorrect || false,
+        points_earned: h.pointsEarned || 0,
+        time_spent_seconds: h.timeSpent || 0,
+        photo_url: photoData?.fileUrl || null,
+        photo_path: photoData?.filePath || null
+      };
+    });
+    
+    const percentage = (gameState.correct / gameState.totalQ) * 100;
+    const rankInfo = getRankInfo(percentage);
+    
+    const submissionData = {
+      student_name: gameState.playerName,
+      skill: gameState.skill,
+      skill_name: gameState.skill === 'add' ? 'Penggabungan (+)' : 'Pengurangan (−)',
+      mission: gameState.mission,
+      mission_name: gameState.mission === 'pribadi' ? 'Zona Aku Hebat' : 
+                    gameState.mission === 'sosial' ? 'Misi Tim Hebat' : 'Misi Ilmuwan Cilik',
+      total_questions: gameState.totalQ,
+      correct_count: gameState.correct,
+      wrong_count: gameState.wrong,
+      total_points: gameState.points,
+      percentage: percentage,
+      rank: rankInfo.title,
+      session_id: gameState.sessionId,
+      started_at: new Date(gameState.startedAt).toISOString(),
+      finished_at: new Date().toISOString(),
+      answers: answersArray,
+      created_date: new Date().toISOString().split('T')[0]
+    };
+    
+    const { data, error } = await supabaseClient
+  .from('submissions')
+  .insert([submissionData])
+  .select();
+    
+    if (error) throw error;
+    
+    console.log('✅ Saved submission:', data[0].id);
+    
+    savingEl.classList.add('hidden');
+    savedEl.classList.remove('hidden');
+    savedEl.textContent = '✅ Data tersimpan! Guru dapat melihat hasilnya.';
+    
+  } catch (error) {
+    console.error('❌ Error saving:', error);
+    savingEl.classList.add('hidden');
+    savedEl.textContent = '❌ Gagal menyimpan: ' + error.message;
+    savedEl.classList.remove('hidden', 'text-green-400');
+    savedEl.classList.add('text-red-400');
+  }
+}
+
+    // ===== HELPER FUNCTIONS =====
+    function createStars() {
+      const container = document.getElementById('stars-container');
+      for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.cssText = `left: ${Math.random() * 100}%; top: ${Math.random() * 100}%; width: ${Math.random() * 3 + 1}px; height: ${Math.random() * 3 + 1}px; --duration: ${Math.random() * 3 + 2}s; animation-delay: ${Math.random() * 2}s;`;
+        container.appendChild(star);
+      }
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('#app > div, #app > main').forEach(s => s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function getStoryQuestions() {
+      if (gameState.skill === 'add') {
+        if (gameState.mission === 'pribadi') return storyQuestionsAddPribadi;
+        if (gameState.mission === 'sosial') return storyQuestionsAddSosial;
+        return storyQuestionsAddSaintifik;
+      } else {
+        if (gameState.mission === 'pribadi') return storyQuestionsSubPribadi;
+        if (gameState.mission === 'sosial') return storyQuestionsSubSosial;
+        return storyQuestionsSubSaintifik;
+      }
+    }
+
+    function renderQuestionDots() {
+      const container = document.getElementById('question-dots');
+      container.innerHTML = '';
+      for (let i = 0; i < gameState.totalQ; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'question-dot';
+        dot.textContent = i + 1;
+        if (i < gameState.currentQ) {
+          const h = gameState.history[i];
+          dot.classList.add(h && h.isCorrect ? 'correct' : 'wrong');
+          dot.innerHTML = h && h.isCorrect ? '✓' : '��';
+        } else if (i === gameState.currentQ) {
+          dot.classList.add('current');
+        }
+        container.appendChild(dot);
+      }
+    }
+
+    function updateChancesDisplay() {
+      const hearts = document.querySelectorAll('.chance-heart');
+      hearts.forEach((h, i) => {
+        h.textContent = i < gameState.chances ? '❤️' : '🖤';
+        h.classList.toggle('opacity-30', i >= gameState.chances);
+      });
+    }
+
+    function updatePhotoStatus() {
+  const hasPhoto = gameState.questionPhotos[gameState.currentQ];
+  const uploadStatus = document.getElementById('question-upload-status');
+  const photoDone = document.getElementById('question-photo-done');
+  const warning = document.getElementById('upload-warning');
+  
+  // Reset visibility
+  if (hasPhoto) {
+    uploadStatus.classList.add('hidden');
+    photoDone.classList.remove('hidden');
+  } else {
+    uploadStatus.classList.remove('hidden');
+    photoDone.classList.add('hidden');
+  }
+  
+  // Update warning message
+  if (hasPhoto) {
+    warning.className = 'bg-gradient-to-r from-green-500/30 to-cyan-500/30 border-2 border-green-500/50 rounded-xl px-4 py-2 text-center';
+    warning.querySelector('p').textContent = '✅ Foto terupload! Kamu bisa menjawab sekarang!';
+    warning.querySelector('p').className = 'text-green-300 text-sm font-bold';
+  } else {
+    warning.className = 'bg-gradient-to-r from-orange-500/30 to-yellow-500/30 border-2 border-yellow-500/50 rounded-xl px-4 py-2 text-center animate-pulse';
+    warning.querySelector('p').textContent = '📸 Unggah proses pengerjaanmu untuk lanjut!';
+    warning.querySelector('p').className = 'text-yellow-300 text-sm font-bold';
+  }
+}
+
+    function displayQuestion() {
+      const questions = getStoryQuestions();
+      const q = questions[gameState.currentQ];
+      
+      document.getElementById('story-image-container').classList.remove('hidden');
+      document.getElementById('story-image-title').textContent = q.imageTitle;
+      
+      // Handle image loading
+      const imgEl = document.getElementById('story-image');
+      const fallbackEl = document.getElementById('story-image-fallback');
+      
+      imgEl.classList.remove('hidden');
+      fallbackEl.classList.add('hidden');
+      
+      imgEl.onload = function() {
+        imgEl.classList.remove('hidden');
+        fallbackEl.classList.add('hidden');
+      };
+      
+      imgEl.onerror = function() {
+        imgEl.classList.add('hidden');
+        fallbackEl.classList.remove('hidden');
+        // Emoji fallback berdasarkan kata kunci di judul
+        const title = q.imageTitle.toLowerCase();
+        let emoji = '📷';
+        if (title.includes('ikat') || title.includes('rambut')) emoji = '🎀';
+        else if (title.includes('origami') || title.includes('burung')) emoji = '🦢';
+        else if (title.includes('ikan') || title.includes('cupang')) emoji = '🐟';
+        else if (title.includes('karet') || title.includes('gelang')) emoji = '🔴';
+        else if (title.includes('goreng')) emoji = '🍳';
+        else if (title.includes('kelereng')) emoji = '🔮';
+        else if (title.includes('buku') || title.includes('rak')) emoji = '📚';
+        else if (title.includes('mangga') || title.includes('panen')) emoji = '🥭';
+        else if (title.includes('mancing') || title.includes('ikan')) emoji = '🎣';
+        else if (title.includes('belajar') || title.includes('waktu')) emoji = '📖';
+        fallbackEl.innerHTML = `<span class="text-6xl animate-bounce-slow">${emoji}</span>`;
+      };
+      
+      imgEl.src = q.image;
+      
+      document.getElementById('story-text').classList.remove('hidden');
+      document.getElementById('story-text').textContent = q.story;
+      document.getElementById('question').textContent = q.question;
+      
+      gameState.answer = q.answer;
+      
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      const btns = document.querySelectorAll('#options button');
+      btns.forEach((btn, i) => {
+        btn.textContent = shuffled[i];
+        btn.disabled = false;
+        btn.className = 'option-btn py-4 rounded-2xl font-bold text-lg';
+      });
+      
+      document.getElementById('current-q-num').textContent = gameState.currentQ + 1;
+      renderQuestionDots();
+      updateStats();
+      updatePhotoStatus();
+      gameState.isAnswering = false;
+    }
+
+    function updateStats() {
+      document.getElementById('correct-count').textContent = gameState.correct;
+      document.getElementById('wrong-count').textContent = gameState.wrong;
+      document.getElementById('points-display').textContent = gameState.points;
+    }
+
+    function showFeedback(isCorrect, correctAnswer = null, points = 0) {
+      const box = document.getElementById('feedback-box');
+      const content = document.getElementById('feedback-content');
+      const emoji = document.getElementById('feedback-emoji');
+      const text = document.getElementById('feedback-text');
+      
+      box.classList.remove('hidden');
+      content.classList.remove('feedback-correct', 'feedback-wrong', 'animate-pop-in');
+      void content.offsetWidth;
+      content.classList.add('animate-pop-in', isCorrect ? 'feedback-correct' : 'feedback-wrong');
+      
+      if (isCorrect) {
+        const msgs = ['🎉 HEBAT!', '⭐ LUAR BIASA!', '🏆 JUARA!', '🔥 KEREN!', '💪 MANTAP!'];
+        emoji.textContent = '✨';
+        text.innerHTML = `${msgs[Math.floor(Math.random() * msgs.length)]}<br><span class="text-2xl text-yellow-300">+${points} 💎</span>`;
+      } else {
+        emoji.textContent = '😅';
+        text.innerHTML = correctAnswer ? `BELUM TEPAT...<br><span class="text-lg">Jawaban: ${correctAnswer}</span>` : 'COBA LAGI!';
+      }
+      
+      setTimeout(() => box.classList.add('hidden'), 1500);
+    }
+
+    function handleAnswer(btn, selected) {
+      if (gameState.isAnswering) return;
+      
+      if (!gameState.questionPhotos[gameState.currentQ]) {
+        const warning = document.getElementById('upload-warning');
+        warning.classList.add('animate-shake');
+        warning.querySelector('p').textContent = '⚠️ Upload foto dulu sebelum menjawab!';
+        warning.querySelector('p').classList.add('text-red-300');
+        setTimeout(() => {
+          warning.classList.remove('animate-shake');
+          updatePhotoStatus();
+        }, 2000);
+        return;
+      }
+      
+      const btns = document.querySelectorAll('#options button');
+      const isCorrect = selected === gameState.answer;
+      
+      if (isCorrect) {
+        gameState.isAnswering = true;
+        clearInterval(gameState.timerInterval);
+        btn.classList.add('correct');
+        btns.forEach(b => b.disabled = true);
+        
+        const pts = 10 + Math.floor((gameState.timer / gameState.maxTimer) * 5) + (gameState.chances === gameState.maxChances ? 5 : 0);
+        gameState.points += pts;
+        gameState.correct++;
+        gameState.history.push({ 
+  isCorrect: true, 
+  answer: selected,
+  pointsEarned: pts,
+  timeSpent: gameState.maxTimer - gameState.timer,
+  chancesUsed: 1
+});
+        
+        showFeedback(true, null, pts);
+        updateStats();
+        renderQuestionDots();
+        
+        setTimeout(() => nextQuestion(), 2000);
+      } else {
+        gameState.chances--;
+        updateChancesDisplay();
+        btn.classList.add('wrong');
+        btn.disabled = true;
+        
+        if (gameState.chances <= 0) {
+          gameState.isAnswering = true;
+          clearInterval(gameState.timerInterval);
+          btns.forEach(b => {
+            b.disabled = true;
+            if (b.textContent === gameState.answer) b.classList.add('correct');
+          });
+          
+          gameState.wrong++;
+          gameState.history.push({ 
+  isCorrect: false, 
+  answer: selected,
+  pointsEarned: 0,
+  timeSpent: gameState.maxTimer - gameState.timer,
+  chancesUsed: gameState.maxChances
+});
+          showFeedback(false, gameState.answer);
+          updateStats();
+          renderQuestionDots();
+          
+          setTimeout(() => nextQuestion(), 2000);
+        } else {
+          showFeedback(false);
+        }
+      }
+    }
+
+   function nextQuestion() {
+  gameState.currentQ++;
+  gameState.chances = gameState.maxChances;
+  updateChancesDisplay();
+  
+  if (gameState.currentQ >= gameState.totalQ) {
+    showResults();
+  } else {
+    resetTimer();
+    displayQuestion();
+    
+    // ✅ RESET TOTAL upload zone
+    setTimeout(() => {
+      const uploadZone = document.getElementById('question-upload-zone');
+      uploadZone.innerHTML = `
+        <input type="file" id="question-photo-input" accept="image/*" capture="environment" class="hidden">
+        <div id="question-upload-status" class="flex items-center gap-2">
+          <span class="text-2xl">📷</span>
+          <span class="text-sm text-gray-300">Klik untuk Upload Foto</span>
+        </div>
+        <div id="question-photo-done" class="hidden flex items-center gap-2">
+          <span class="text-xl">✅</span>
+          <span class="text-sm text-green-400 font-bold">Terupload!</span>
+          <button id="view-question-photo" class="text-xs bg-white/20 px-2 py-1 rounded-full hover:bg-white/30">👁️</button>
+          <button id="change-question-photo" class="text-xs bg-white/20 px-2 py-1 rounded-full hover:bg-white/30">🔄</button>
+        </div>
+      `;
+      
+      // Re-attach event listeners
+      attachUploadListeners();
+      
+      // Update status
+      updatePhotoStatus();
+      
+      console.log('🔄 Full reset upload zone for question:', gameState.currentQ + 1);
+    }, 50);
+  }
+}
+function attachUploadListeners() {
+  const uploadZone = document.getElementById('question-upload-zone');
+  const photoInput = document.getElementById('question-photo-input');
+  const viewBtn = document.getElementById('view-question-photo');
+  const changeBtn = document.getElementById('change-question-photo');
+  
+  // ✅ CLONE element untuk hapus semua event listener lama
+  const newUploadZone = uploadZone.cloneNode(true);
+  uploadZone.parentNode.replaceChild(newUploadZone, uploadZone);
+  
+  // Get elements yang baru setelah clone
+  const newPhotoInput = document.getElementById('question-photo-input');
+  const newViewBtn = document.getElementById('view-question-photo');
+  const newChangeBtn = document.getElementById('change-question-photo');
+  
+  // Upload zone click
+  document.getElementById('question-upload-zone').addEventListener('click', (e) => {
+    if (e.target.id !== 'view-question-photo' && e.target.id !== 'change-question-photo') {
+      document.getElementById('question-photo-input').click();
+    }
+  });
+  
+  // File input change
+  newPhotoInput.addEventListener('change', async function(e) {
+    if (e.target.files && e.target.files[0]) {
+      const uploadZone = document.getElementById('question-upload-zone');
+      const originalHTML = uploadZone.innerHTML;
+      
+      uploadZone.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="text-2xl animate-spin">⏳</span>
+          <span class="text-sm text-yellow-300">Mengupload foto...</span>
+        </div>
+      `;
+      
+      try {
+        console.log('📤 Uploading for question:', gameState.currentQ + 1);
+        
+        const result = await uploadPhotoToSupabase(
+          e.target.files[0],
+          gameState.playerName,
+          gameState.currentQ + 1
+        );
+        
+        console.log('✅ Upload success:', result);
+        
+        gameState.questionPhotos[gameState.currentQ] = result;
+        uploadZone.innerHTML = originalHTML;
+        
+        // Re-attach listeners
+        attachUploadListeners();
+        
+        updatePhotoStatus();
+        e.target.value = '';
+        
+      } catch (error) {
+        console.error('❌ Upload error:', error);
+        uploadZone.innerHTML = originalHTML;
+        attachUploadListeners();
+        alert('❌ Gagal upload foto: ' + error.message);
+        e.target.value = '';
+      }
+    }
+  });
+  
+  // View photo
+  if (newViewBtn) {
+    newViewBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const photo = gameState.questionPhotos[gameState.currentQ];
+      if (photo) {
+        document.getElementById('modal-photo').src = photo.fileUrl;
+        document.getElementById('modal-question-num').textContent = gameState.currentQ + 1;
+        document.getElementById('photo-modal').classList.remove('hidden');
+      }
+    });
+  }
+  
+  // Change photo
+  if (newChangeBtn) {
+    newChangeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('question-photo-input').click();
+    });
+  }
+}
+    function startTimer() {
+      gameState.timer = gameState.maxTimer;
+      updateTimerDisplay();
+      gameState.timerInterval = setInterval(() => {
+        gameState.timer--;
+        updateTimerDisplay();
+        if (gameState.timer <= 0) {
+          clearInterval(gameState.timerInterval);
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const timerEl = document.getElementById('timer');
+      const circle = document.getElementById('timer-circle');
+      timerEl.textContent = gameState.timer;
+      
+      if (gameState.timer <= 15) {
+        circle.classList.add('warning');
+        timerEl.classList.add('text-red-400');
+        timerEl.classList.remove('text-yellow-400');
+        circle.classList.add('animate-timer-pulse');
+      } else {
+        circle.classList.remove('warning');
+        timerEl.classList.remove('text-red-400');
+        timerEl.classList.add('text-yellow-400');
+        circle.classList.remove('animate-timer-pulse');
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(gameState.timerInterval);
+      startTimer();
+    }
+
+    function handleTimeout() {
+      if (gameState.isAnswering) return;
+      gameState.isAnswering = true;
+      
+      const btns = document.querySelectorAll('#options button');
+      btns.forEach(b => {
+        b.disabled = true;
+        if (b.textContent === gameState.answer) b.classList.add('correct');
+      });
+      
+      gameState.wrong++;
+      gameState.history.push({ isCorrect: false, answer: null, timeout: true });
+      showFeedback(false, gameState.answer);
+      updateStats();
+      renderQuestionDots();
+      
+      setTimeout(() => nextQuestion(), 2000);
+    }
+
+    async function showResults() {
+      clearInterval(gameState.timerInterval);
+      showScreen('result-screen');
+      
+      document.getElementById('result-correct').textContent = gameState.correct;
+      document.getElementById('result-wrong').textContent = gameState.wrong;
+      document.getElementById('result-points').textContent = gameState.points;
+      
+      const pct = (gameState.correct / gameState.totalQ) * 100;
+      
+      if (pct >= 80) {
+        document.getElementById('result-emoji').textContent = '🏆';
+        document.getElementById('result-title').textContent = 'HEBAT!';
+        document.getElementById('result-message').textContent = 'Kamu luar biasa, Pahlawan!';
+      } else if (pct >= 50) {
+        document.getElementById('result-emoji').textContent = '������';
+        document.getElementById('result-title').textContent = 'BAGUS!';
+        document.getElementById('result-message').textContent = 'Terus berlatih ya!';
+      } else {
+        document.getElementById('result-emoji').textContent = '��';
+        document.getElementById('result-title').textContent = 'SEMANGAT!';
+        document.getElementById('result-message').textContent = 'Jangan menyerah, coba lagi!';
+      }
+      
+      const stars = pct >= 100 ? 3 : pct >= 70 ? 2 : pct >= 40 ? 1 : 0;
+      document.getElementById('star-1').classList.add('opacity-30');
+      document.getElementById('star-2').classList.add('opacity-30');
+      document.getElementById('star-3').classList.add('opacity-30');
+      setTimeout(() => { if (stars >= 1) document.getElementById('star-1').classList.remove('opacity-30'); }, 300);
+      setTimeout(() => { if (stars >= 2) document.getElementById('star-2').classList.remove('opacity-30'); }, 600);
+      setTimeout(() => { if (stars >= 3) document.getElementById('star-3').classList.remove('opacity-30'); }, 900);
+      
+      await saveSubmissionToSupabase();
+    }
+
+    function resetGame() {
+  gameState = { 
+    ...gameState, 
+    currentQ: 0, 
+    correct: 0, 
+    wrong: 0, 
+    points: 0, 
+    timer: 60, 
+    isAnswering: false, 
+    answer: '', 
+    /* chances: 3,  */
+    chances: 2,
+    questionPhotos: {}, 
+    history: [],
+    sessionId: 'session_' + Date.now(),
+    startedAt: Date.now()  // ✅ GANTI JADI INI
+  };
+}
+
+    function startGame() {
+      resetGame();
+      showScreen('game-screen');
+      document.getElementById('display-name').textContent = gameState.playerName;
+      displayQuestion();
+      startTimer();
+    }
+
+    // ===== EVENT LISTENERS =====
+    document.getElementById('start-btn').addEventListener('click', () => showScreen('howto-screen'));
+    document.getElementById('menu-materi-btn').addEventListener('click', () => showScreen('materi-screen'));
+    document.getElementById('menu-peringkat-btn').addEventListener('click', () => {
+      showScreen('peringkat-screen');
+      renderLeaderboard();
+    });
+    document.getElementById('materi-back-btn').addEventListener('click', () => showScreen('start-screen'));
+    document.getElementById('peringkat-back-btn').addEventListener('click', () => showScreen('start-screen'));
+    document.getElementById('howto-continue-btn').addEventListener('click', () => { showScreen('name-screen'); document.getElementById('player-name-input').focus(); });
+    document.getElementById('howto-back-btn').addEventListener('click', () => showScreen('start-screen'));
+
+    document.getElementById('confirm-name-btn').addEventListener('click', () => {
+      const name = document.getElementById('player-name-input').value.trim();
+      if (!name) { document.getElementById('player-name-input').placeholder = '⚠️ Tulis namamu dulu!'; return; }
+      gameState.playerName = name;
+      document.getElementById('hero-name-display').textContent = name;
+      showScreen('choose-skill-screen');
+    });
+    document.getElementById('player-name-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('confirm-name-btn').click(); });
+    document.getElementById('back-to-menu-btn').addEventListener('click', () => showScreen('start-screen'));
+
+    document.getElementById('choose-addition-btn').addEventListener('click', () => {
+      gameState.skill = 'add';
+      document.getElementById('mission-skill-icon').textContent = '⚔️';
+      document.getElementById('selected-skill-name').textContent = 'Penggabungan';
+      showScreen('choose-mission-screen');
+    });
+    document.getElementById('choose-subtraction-btn').addEventListener('click', () => {
+      gameState.skill = 'sub';
+      document.getElementById('mission-skill-icon').textContent = '🛡️';
+      document.getElementById('selected-skill-name').textContent = 'Pengurangan';
+      showScreen('choose-mission-screen');
+    });
+    document.getElementById('back-to-name-btn').addEventListener('click', () => showScreen('name-screen'));
+
+        document.querySelectorAll('.mission-select-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const card = this.closest('.mission-card');
+            const detail = card.querySelector('.mission-detail');
+            const isOpen = !detail.classList.contains('hidden');
+            
+            document.querySelectorAll('.mission-detail').forEach(d => d.classList.add('hidden'));
+            document.querySelectorAll('.mission-arrow').forEach(a => a.style.transform = 'rotate(0deg)');
+            
+            if (!isOpen) {
+            detail.classList.remove('hidden');
+            card.querySelector('.mission-arrow').style.transform = 'rotate(180deg)';
+            }
+        });
+        });
+
+        document.querySelectorAll('.start-mission-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    gameState.mission = this.dataset.missionType;
+    startGame();  // ✅ LANGSUNG PANGGIL INI
+  });
+});
+
+        document.getElementById('back-to-skill-btn').addEventListener('click', () => showScreen('choose-skill-screen'));
+        document.getElementById('game-back-btn').addEventListener('click', () => { clearInterval(gameState.timerInterval); showScreen('choose-mission-screen'); });
+
+        document.querySelectorAll('#options button').forEach(btn => {
+        btn.addEventListener('click', function() { handleAnswer(this, this.textContent); });
+        });
+
+        document.getElementById('question-upload-zone').addEventListener('click', (e) => {
+        if (e.target.id !== 'view-question-photo' && e.target.id !== 'change-question-photo') {
+            document.getElementById('question-photo-input').click();
+        }
+        });
+
+       document.getElementById('question-photo-input').addEventListener('change', async function(e) {
+  if (e.target.files && e.target.files[0]) {
+    const uploadZone = document.getElementById('question-upload-zone');
+    const originalHTML = uploadZone.innerHTML;
+    
+    uploadZone.innerHTML = `
+      <div class="flex items-center gap-2">
+        <span class="text-2xl animate-spin">⏳</span>
+        <span class="text-sm text-yellow-300">Mengupload foto...</span>
+      </div>
+    `;
+    
+    try {
+      console.log('📤 Uploading for question:', gameState.currentQ + 1);
+      
+      const result = await uploadPhotoToSupabase(
+        e.target.files[0],
+        gameState.playerName,
+        gameState.currentQ + 1
+      );
+      
+      console.log('✅ Upload success:', result);
+      
+      // ✅ Simpan foto ke soal yang SEDANG AKTIF
+      gameState.questionPhotos[gameState.currentQ] = result;
+      
+      // ✅ Reset UI
+      uploadZone.innerHTML = originalHTML;
+      
+      // ✅ Update status
+      updatePhotoStatus();
+      
+      // ✅ Reset input file
+      e.target.value = '';
+      
+    } catch (error) {
+      console.error('❌ Upload error:', error);
+      uploadZone.innerHTML = originalHTML;
+      alert('❌ Gagal upload foto: ' + error.message);
+      e.target.value = '';
+    }
+  }
+});
+
+        document.getElementById('view-question-photo').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const photo = gameState.questionPhotos[gameState.currentQ];
+        if (photo) {
+            document.getElementById('modal-photo').src = photo.fileUrl;
+            document.getElementById('modal-question-num').textContent = gameState.currentQ + 1;
+            document.getElementById('photo-modal').classList.remove('hidden');
+        }
+        });
+
+        document.getElementById('change-question-photo').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('question-photo-input').click();
+        });
+
+        document.getElementById('close-photo-modal').addEventListener('click', () => document.getElementById('photo-modal').classList.add('hidden'));
+        document.getElementById('photo-modal').addEventListener('click', (e) => { if (e.target.id === 'photo-modal') document.getElementById('photo-modal').classList.add('hidden'); });
+
+document.getElementById('play-again-btn').addEventListener('click', () => showScreen('choose-mission-screen'));
+    document.getElementById('view-leaderboard-btn').addEventListener('click', () => {
+      showScreen('peringkat-screen');
+      renderLeaderboard();
+    });
+    document.getElementById('back-home-btn').addEventListener('click', () => showScreen('start-screen'));
+
+    // ===== INIT =====
+    createStars();
+    console.log('🎮 Game initialized');
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b28dcf4358af881',t:'MTc2NjUwMzQzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
