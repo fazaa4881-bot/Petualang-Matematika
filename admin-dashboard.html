@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-indigo-900 text-white min-h-screen">
+  
+  <div class="max-w-7xl mx-auto p-6">
+    <!-- Header -->
+    <header class="mb-8 flex justify-between items-center">
+      <div>
+        <h1 class="text-4xl font-bold mb-2">🔐 Admin Dashboard</h1>
+        <p class="text-gray-300">Kelola Data Guru & Monitor Sistem</p>
+      </div>
+      <div class="text-right">
+        <p class="text-gray-400">Admin: <span class="text-yellow-400 font-bold" id="admin-name">Admin</span></p>
+        <button onclick="logout()" class="text-sm text-red-400 hover:text-red-300 mt-1">🚪 Logout</button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-4 mb-6 flex gap-4">
+      <button onclick="showTab('teachers')" id="tab-teachers" class="px-6 py-3 rounded-lg font-bold bg-yellow-500 text-gray-900">
+        👨‍🏫 Kelola Guru
+      </button>
+      <button onclick="showTab('submissions')" id="tab-submissions" class="px-6 py-3 rounded-lg font-bold bg-white/10 hover:bg-white/20">
+        📊 Lihat Submissions
+      </button>
+    </div>
+
+    <!-- Tab: Kelola Guru -->
+    <div id="content-teachers" class="space-y-6">
+      <!-- Add Button -->
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold">📋 Daftar Guru</h2>
+        <button onclick="openAddModal()" class="px-6 py-3 bg-green-500 hover:bg-green-600 rounded-lg font-bold">
+          ➕ Tambah Guru Baru
+        </button>
+      </div>
+
+      <!-- Teachers List -->
+      <div id="teachers-list" class="space-y-4"></div>
+
+      <!-- Loading -->
+      <div id="teachers-loading" class="text-center py-12">
+        <div class="text-6xl mb-4 animate-spin">⏳</div>
+        <p class="text-gray-300">Memuat data guru...</p>
+      </div>
+    </div>
+
+    <!-- Tab: Submissions (reuse dashboard guru) -->
+    <div id="content-submissions" class="hidden">
+      <div class="text-center py-12">
+        <div class="text-6xl mb-4">📊</div>
+        <p class="text-gray-300 mb-4">Untuk melihat submissions siswa secara detail</p>
+        <a href="dashboard-guru.html" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-bold inline-block">
+          🔗 Buka Dashboard Guru
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Add/Edit Guru -->
+  <div id="guru-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 p-4">
+    <div class="min-h-screen flex items-center justify-center">
+      <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl max-w-2xl w-full p-8 relative">
+        <button onclick="closeGuruModal()" class="absolute top-4 right-4 text-4xl hover:text-yellow-400">×</button>
+        <h2 id="modal-title" class="text-3xl font-bold text-yellow-400 mb-6">➕ Tambah Guru Baru</h2>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Username *</label>
+            <input type="text" id="input-username" placeholder="Contoh: guru3" required
+                   class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+          </div>
+          
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Password *</label>
+            <input type="password" id="input-password" placeholder="Minimal 6 karakter" required
+                   class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+          </div>
+          
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Nama Lengkap</label>
+            <input type="text" id="input-fullname" placeholder="Contoh: Bu Ani Wijaya"
+                   class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+          </div>
+          
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Email</label>
+            <input type="email" id="input-email" placeholder="Contoh: ani@sekolah.com"
+                   class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="input-active" checked class="w-5 h-5">
+            <label for="input-active" class="text-sm text-gray-300">Akun Aktif</label>
+          </div>
+          
+          <div id="error-box" class="hidden bg-red-500/20 border border-red-500 rounded-lg px-4 py-3 text-red-200 text-sm"></div>
+          
+          <div class="flex gap-3 pt-4">
+            <button onclick="saveGuru()" class="flex-1 px-6 py-3 bg-green-500 hover:bg-green-600 rounded-lg font-bold text-white transition-all">
+              ✅ Simpan
+            </button>
+            <button onclick="closeGuruModal()" class="flex-1 px-6 py-3 bg-gray-500 hover:bg-gray-600 rounded-lg font-bold text-white transition-all">
+              ❌ Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== PROTEKSI ADMIN =====
+    (function() {
+      const isLoggedIn = sessionStorage.getItem('guru_logged_in');
+      const username = sessionStorage.getItem('guru_username');
+      
+      if (isLoggedIn !== 'true' || username !== 'admin') {
+        alert('❌ Akses ditolak! Hanya admin yang bisa masuk.');
+        window.location.replace('login-guru.html');
+      }
+    })();
+
+    // Cegah back button
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        if (sessionStorage.getItem('guru_logged_in') !== 'true') {
+          window.location.replace('login-guru.html');
+        }
+      }
+    });
+
+    // ===== SUPABASE =====
+    const SUPABASE_URL = 'https://szvkwvtvqpwzalqnbous.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dmt3dnR2cXB3emFscW5ib3VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1NTIyMDYsImV4cCI6MjA4MjEyODIwNn0.lo6jlTthlrqfPK8hYEQ-nrXTeWnw4fuhocAnW7nskJE';
+    
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase initialized');
+
+    const adminName = sessionStorage.getItem('guru_fullname') || 'Admin';
+    document.getElementById('admin-name').textContent = adminName;
+
+    let allTeachers = [];
+    let editingTeacherId = null;
+
+    // ===== LOGOUT =====
+    function logout() {
+      sessionStorage.clear();
+      window.location.replace('login-guru.html');
+    }
+
+    // ===== TAB NAVIGATION =====
+    function showTab(tab) {
+      document.getElementById('content-teachers').classList.add('hidden');
+      document.getElementById('content-submissions').classList.add('hidden');
+      document.getElementById('tab-teachers').classList.remove('bg-yellow-500', 'text-gray-900');
+      document.getElementById('tab-teachers').classList.add('bg-white/10');
+      document.getElementById('tab-submissions').classList.remove('bg-yellow-500', 'text-gray-900');
+      document.getElementById('tab-submissions').classList.add('bg-white/10');
+      
+      if (tab === 'teachers') {
+        document.getElementById('content-teachers').classList.remove('hidden');
+        document.getElementById('tab-teachers').classList.add('bg-yellow-500', 'text-gray-900');
+        document.getElementById('tab-teachers').classList.remove('bg-white/10');
+      } else {
+        document.getElementById('content-submissions').classList.remove('hidden');
+        document.getElementById('tab-submissions').classList.add('bg-yellow-500', 'text-gray-900');
+        document.getElementById('tab-submissions').classList.remove('bg-white/10');
+      }
+    }
+
+    // ===== LOAD TEACHERS =====
+    async function loadTeachers() {
+      document.getElementById('teachers-loading').classList.remove('hidden');
+      document.getElementById('teachers-list').innerHTML = '';
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('teachers')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        allTeachers = data || [];
+        document.getElementById('teachers-loading').classList.add('hidden');
+        renderTeachers();
+
+      } catch (error) {
+        console.error('❌ Error:', error);
+        document.getElementById('teachers-loading').innerHTML = `
+          <div class="text-red-400">
+            <p class="text-xl mb-2">❌ Gagal memuat data</p>
+            <p class="text-sm">${error.message}</p>
+            <button onclick="loadTeachers()" class="mt-4 px-6 py-2 bg-yellow-500 hover:bg-yellow-600 rounded-lg text-gray-900 font-bold">
+              🔄 Coba Lagi
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // ===== RENDER TEACHERS =====
+    function renderTeachers() {
+      const listEl = document.getElementById('teachers-list');
+      
+      if (allTeachers.length === 0) {
+        listEl.innerHTML = '<p class="text-center text-gray-400 py-8">Belum ada data guru</p>';
+        return;
+      }
+
+      listEl.innerHTML = allTeachers.map(teacher => `
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 hover:bg-white/15 transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-2xl font-bold text-yellow-400">${teacher.username}</h3>
+                <span class="px-3 py-1 rounded-full text-xs font-bold ${teacher.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">
+                  ${teacher.is_active ? '✅ Aktif' : '❌ Nonaktif'}
+                </span>
+              </div>
+              <p class="text-gray-300">${teacher.full_name || '-'}</p>
+              <p class="text-sm text-gray-400">${teacher.email || '-'}</p>
+              <p class="text-xs text-gray-500 mt-2">Dibuat: ${formatDate(teacher.created_at)}</p>
+              ${teacher.last_login ? `<p class="text-xs text-gray-500">Login terakhir: ${formatDate(teacher.last_login)}</p>` : ''}
+            </div>
+            
+            <div class="flex gap-2">
+              <button onclick="editTeacher(${teacher.id})" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 rounded-lg text-sm font-bold text-gray-900">
+                ✏️ Edit
+              </button>
+              <button onclick="deleteTeacher(${teacher.id}, '${teacher.username}')" 
+                      class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-bold"
+                      ${teacher.username === 'admin' ? 'disabled opacity-50 cursor-not-allowed' : ''}>
+                🗑️ Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ===== FORMAT DATE =====
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('id-ID', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // ===== MODAL =====
+    function openAddModal() {
+      editingTeacherId = null;
+      document.getElementById('modal-title').textContent = '➕ Tambah Guru Baru';
+      document.getElementById('input-username').value = '';
+      document.getElementById('input-password').value = '';
+      document.getElementById('input-fullname').value = '';
+      document.getElementById('input-email').value = '';
+      document.getElementById('input-active').checked = true;
+      document.getElementById('input-username').disabled = false;
+      document.getElementById('error-box').classList.add('hidden');
+      document.getElementById('guru-modal').classList.remove('hidden');
+    }
+
+    function editTeacher(teacherId) {
+      const teacher = allTeachers.find(t => t.id === teacherId);
+      if (!teacher) return;
+
+      editingTeacherId = teacherId;
+      document.getElementById('modal-title').textContent = '✏️ Edit Data Guru';
+      document.getElementById('input-username').value = teacher.username;
+      document.getElementById('input-password').value = '';
+      document.getElementById('input-password').placeholder = 'Kosongkan jika tidak diubah';
+      document.getElementById('input-fullname').value = teacher.full_name || '';
+      document.getElementById('input-email').value = teacher.email || '';
+      document.getElementById('input-active').checked = teacher.is_active;
+      document.getElementById('input-username').disabled = true;
+      document.getElementById('error-box').classList.add('hidden');
+      document.getElementById('guru-modal').classList.remove('hidden');
+    }
+
+    function closeGuruModal() {
+      document.getElementById('guru-modal').classList.add('hidden');
+      document.getElementById('input-password').placeholder = 'Minimal 6 karakter';
+      editingTeacherId = null;
+    }
+
+    // ===== SAVE GURU (CREATE/UPDATE) =====
+    async function saveGuru() {
+      const username = document.getElementById('input-username').value.trim();
+      const password = document.getElementById('input-password').value;
+      const fullName = document.getElementById('input-fullname').value.trim();
+      const email = document.getElementById('input-email').value.trim();
+      const isActive = document.getElementById('input-active').checked;
+      const errorBox = document.getElementById('error-box');
+
+      // Validasi
+      if (!username) {
+        errorBox.textContent = '❌ Username wajib diisi!';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
+      if (!editingTeacherId && !password) {
+        errorBox.textContent = '❌ Password wajib diisi untuk guru baru!';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
+      if (password && password.length < 6) {
+        errorBox.textContent = '❌ Password minimal 6 karakter!';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        if (editingTeacherId) {
+          // UPDATE
+          const updateData = {
+            full_name: fullName,
+            email: email,
+            is_active: isActive
+          };
+
+          if (password) {
+            updateData.password = password;
+          }
+
+          const { error } = await supabaseClient
+            .from('teachers')
+            .update(updateData)
+            .eq('id', editingTeacherId);
+
+          if (error) throw error;
+
+          alert('✅ Data guru berhasil diupdate!');
+        } else {
+          // CREATE
+          const { error } = await supabaseClient
+            .from('teachers')
+            .insert([{
+              username: username,
+              password: password,
+              full_name: fullName,
+              email: email,
+              is_active: isActive
+            }]);
+
+          if (error) throw error;
+
+          alert('✅ Guru baru berhasil ditambahkan!');
+        }
+
+        closeGuruModal();
+        loadTeachers();
+
+      } catch (error) {
+        console.error('❌ Error:', error);
+        errorBox.textContent = '❌ ' + (error.message || 'Terjadi kesalahan!');
+        errorBox.classList.remove('hidden');
+      }
+    }
+
+    // ===== DELETE GURU =====
+    async function deleteTeacher(teacherId, username) {
+      if (username === 'admin') {
+        alert('❌ Admin tidak bisa dihapus!');
+        return;
+      }
+
+      const confirm = window.confirm(`🗑️ Yakin ingin menghapus guru "${username}"?\n\nData yang dihapus tidak dapat dikembalikan!`);
+      if (!confirm) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('teachers')
+          .delete()
+          .eq('id', teacherId);
+
+        if (error) throw error;
+
+        alert('✅ Guru berhasil dihapus!');
+        loadTeachers();
+
+      } catch (error) {
+        console.error('❌ Error:', error);
+        alert('❌ Gagal menghapus: ' + error.message);
+      }
+    }
+
+    // ===== INIT =====
+    loadTeachers();
+  </script>
+</body>
+</html>
