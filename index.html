@@ -1510,7 +1510,7 @@ async function uploadPhotoToSupabase(file, studentName, questionNum) {
     // ===== INIT =====
 createStars();
 console.log('🎮 Game initialized');
-
+// terakhir
     // ===== LEADERBOARD FUNCTIONS =====
     function getRankInfo(percentage) {
       if (percentage >= 90) return { icon: '👑', title: 'Legenda', color: 'text-yellow-400' };
@@ -1519,49 +1519,168 @@ console.log('🎮 Game initialized');
       return { icon: '🌱', title: 'Petualang', color: 'text-green-400' };
     }
     
-    function renderLeaderboard() {
-      const loadingEl = document.getElementById('leaderboard-loading');
-      const emptyEl = document.getElementById('leaderboard-empty');
-      const listEl = document.getElementById('leaderboard-list');
-      
-      loadingEl.classList.add('hidden');
-      
-      if (leaderboardData.length === 0) {
-        emptyEl.classList.remove('hidden');
-        listEl.classList.add('hidden');
-        return;
+    async function renderLeaderboard() {
+  const loadingEl = document.getElementById('leaderboard-loading');
+  const emptyEl = document.getElementById('leaderboard-empty');
+  const listEl = document.getElementById('leaderboard-list');
+  const subtitleEl = document.querySelector('#peringkat-screen p.text-gray-300');
+  
+  loadingEl.classList.remove('hidden');
+  emptyEl.classList.add('hidden');
+  listEl.classList.add('hidden');
+  
+  try {
+    // Fetch data dari Supabase
+    const { data, error } = await supabaseClient
+      .from('submissions')
+      .select('*')
+      .order('total_points', { ascending: false });
+    
+    if (error) throw error;
+    
+    loadingEl.classList.add('hidden');
+    
+    if (!data || data.length === 0) {
+      emptyEl.classList.remove('hidden');
+      subtitleEl.innerHTML = '0 Pahlawan Sudah Mengerjakan <span class="animate-wiggle">👑</span>';
+      return;
+    }
+    
+    // Update jumlah pahlawan
+    subtitleEl.innerHTML = `${data.length} Pahlawan Sudah Mengerjakan <span class="animate-wiggle">👑</span>`;
+    
+    // Group data by skill and mission
+    const grouped = {
+      add: { pribadi: [], sosial: [], saintifik: [] },
+      sub: { pribadi: [], sosial: [], saintifik: [] }
+    };
+    
+    data.forEach(player => {
+      const skill = player.skill || 'add';
+      const mission = player.mission || 'pribadi';
+      if (grouped[skill] && grouped[skill][mission]) {
+        grouped[skill][mission].push(player);
       }
-      
-      emptyEl.classList.add('hidden');
-      listEl.classList.remove('hidden');
-      
-      const top10 = leaderboardData.slice(0, 10);
-      
-      listEl.innerHTML = top10.map((player, index) => {
-        const rankInfo = getRankInfo(player.percentage || 0);
-        const positionIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
-        const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
-        
-        return `
-          <div class="leaderboard-item card-glass rounded-2xl p-4 border-2 border-white/10 ${rankClass}">
-            <div class="flex items-center gap-4">
-              <div class="text-3xl font-title w-12 text-center">${positionIcon}</div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-xl">${rankInfo.icon}</span>
-                  <span class="font-bold ${rankInfo.color}">${player.player_name || 'Pahlawan'}</span>
-                </div>
-                <p class="text-gray-400 text-xs">${rankInfo.title} • ${player.skill === 'add' ? '⚔️ Penggabungan' : '🛡️ Pengurangan'}</p>
+    });
+    
+    // Sort each group
+    Object.keys(grouped).forEach(skill => {
+      Object.keys(grouped[skill]).forEach(mission => {
+        grouped[skill][mission].sort((a, b) => b.total_points - a.total_points);
+      });
+    });
+    
+    // Render HTML
+    listEl.classList.remove('hidden');
+    let html = '';
+    
+    // JURUS PENGGABUNGAN
+    html += `
+      <div class="card-glass rounded-3xl p-5 border-2 border-yellow-500/30">
+        <h3 class="font-title text-2xl text-yellow-400 mb-4 flex items-center justify-center gap-2">
+          <span class="animate-swing">⚔️</span> JURUS PENGGABUNGAN <span class="animate-swing">⚔️</span>
+        </h3>
+    `;
+    
+    // Zona Aku Hebat
+    html += renderMissionGroup(grouped.add.pribadi, '🦸 Zona Aku Hebat', 'from-yellow-500/20');
+    
+    // Misi Tim Hebat
+    html += renderMissionGroup(grouped.add.sosial, '👫 Misi Tim Hebat', 'from-pink-500/20');
+    
+    // Misi Ilmuwan Cilik
+    html += renderMissionGroup(grouped.add.saintifik, '🔬 Misi Ilmuwan Cilik', 'from-cyan-500/20');
+    
+    html += `</div>`;
+    
+    // JURUS PENGURANGAN
+    html += `
+      <div class="card-glass rounded-3xl p-5 border-2 border-cyan-500/30">
+        <h3 class="font-title text-2xl text-cyan-400 mb-4 flex items-center justify-center gap-2">
+          <span class="animate-bounce-slow">🛡️</span> JURUS PENGURANGAN <span class="animate-bounce-slow">🛡️</span>
+        </h3>
+    `;
+    
+    // Zona Aku Hebat
+    html += renderMissionGroup(grouped.sub.pribadi, '🦸 Zona Aku Hebat', 'from-yellow-500/20');
+    
+    // Misi Tim Hebat
+    html += renderMissionGroup(grouped.sub.sosial, '👫 Misi Tim Hebat', 'from-pink-500/20');
+    
+    // Misi Ilmuwan Cilik
+    html += renderMissionGroup(grouped.sub.saintifik, '🔬 Misi Ilmuwan Cilik', 'from-cyan-500/20');
+    
+    html += `</div>`;
+    
+    listEl.innerHTML = html;
+    
+  } catch (error) {
+    console.error('❌ Error loading leaderboard:', error);
+    loadingEl.classList.add('hidden');
+    emptyEl.classList.remove('hidden');
+    emptyEl.querySelector('p.text-gray-300').textContent = 'Gagal memuat data!';
+    emptyEl.querySelector('p.text-gray-400').textContent = error.message;
+  }
+}
+
+function renderMissionGroup(players, title, gradientClass) {
+  if (!players || players.length === 0) {
+    return `
+      <div class="mb-4">
+        <h4 class="font-bold text-lg text-gray-300 mb-2">${title}</h4>
+        <div class="bg-gradient-to-r ${gradientClass} to-transparent rounded-xl p-3 border-l-4 border-gray-500">
+          <p class="text-gray-400 text-sm text-center">Belum ada yang mengerjakan</p>
+        </div>
+      </div>
+    `;
+  }
+  
+  let html = `
+    <div class="mb-4">
+      <h4 class="font-bold text-lg text-gray-300 mb-2">${title}</h4>
+      <div class="space-y-2">
+  `;
+  
+  players.forEach((player, index) => {
+    const rankInfo = getRankInfo(player.percentage || 0);
+    const positionIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+    
+    html += `
+      <div class="bg-gradient-to-r ${gradientClass} to-transparent rounded-xl p-3 border-l-4 border-${getRankColor(player.percentage)}-500 hover:scale-102 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-xl font-title w-8">${positionIcon}</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-lg">${rankInfo.icon}</span>
+                <span class="font-bold ${rankInfo.color}">${player.student_name || 'Pahlawan'}</span>
               </div>
-              <div class="text-right">
-                <p class="font-title text-xl text-yellow-400">${player.points || 0} 💎</p>
-                <p class="text-gray-400 text-xs">✅ ${player.correct || 0}/10</p>
-              </div>
+              <p class="text-gray-400 text-xs">${rankInfo.title}</p>
             </div>
           </div>
-        `;
-      }).join('');
-    }
+          <div class="text-right">
+            <p class="font-title text-lg text-yellow-400">${player.total_points || 0} 💎</p>
+            <p class="text-gray-400 text-xs">✅ ${player.correct_count || 0}/10</p>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += `
+      </div>
+    </div>
+  `;
+  
+  return html;
+}
+
+function getRankColor(percentage) {
+  if (percentage >= 90) return 'yellow';
+  if (percentage >= 70) return 'purple';
+  if (percentage >= 50) return 'cyan';
+  return 'green';
+}
     
    async function saveSubmissionToSupabase() {
   const savingEl = document.getElementById('saving-indicator');
@@ -2124,10 +2243,10 @@ function attachUploadListeners() {
     // ===== EVENT LISTENERS =====
     document.getElementById('start-btn').addEventListener('click', () => showScreen('howto-screen'));
     document.getElementById('menu-materi-btn').addEventListener('click', () => showScreen('materi-screen'));
-    document.getElementById('menu-peringkat-btn').addEventListener('click', () => {
-      showScreen('peringkat-screen');
-      renderLeaderboard();
-    });
+    document.getElementById('menu-peringkat-btn').addEventListener('click', async () => {
+  showScreen('peringkat-screen');
+  await renderLeaderboard();
+});
     document.getElementById('materi-back-btn').addEventListener('click', () => showScreen('start-screen'));
     document.getElementById('peringkat-back-btn').addEventListener('click', () => showScreen('start-screen'));
     document.getElementById('howto-continue-btn').addEventListener('click', () => { showScreen('name-screen'); document.getElementById('player-name-input').focus(); });
@@ -2256,11 +2375,10 @@ function attachUploadListeners() {
         document.getElementById('close-photo-modal').addEventListener('click', () => document.getElementById('photo-modal').classList.add('hidden'));
         document.getElementById('photo-modal').addEventListener('click', (e) => { if (e.target.id === 'photo-modal') document.getElementById('photo-modal').classList.add('hidden'); });
 
-document.getElementById('play-again-btn').addEventListener('click', () => showScreen('choose-mission-screen'));
-    document.getElementById('view-leaderboard-btn').addEventListener('click', () => {
-      showScreen('peringkat-screen');
-      renderLeaderboard();
-    });
+document.getElementById('view-leaderboard-btn').addEventListener('click', async () => {
+  showScreen('peringkat-screen');
+  await renderLeaderboard();
+});
     document.getElementById('back-home-btn').addEventListener('click', () => showScreen('start-screen'));
 
     // ===== INIT =====
